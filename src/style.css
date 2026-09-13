@@ -1,12 +1,11 @@
-/* Cyber-Medical 3D Workstation Design System for Anatomi Tubuh Manusia */
+/* Playful Neo-Brutalist Design System for Anatomi Tubuh Manusia Kids & Family */
 
 :root {
-  --bg-creamy: #060913;
-  --bg-card: #0b1325;
-  --ink-line: #1e293b;
-  --ink-text: #f8fafc;
-  --ink-soft: #94a3b8;
-  --ink-muted: #64748b;
+  --bg-creamy: #fdf6ec;
+  --bg-card: #ffffff;
+  --ink-line: #2f2a26;
+  --ink-soft: #64748b;
+  --ink-muted: #94a3b8;
 
   --c-heart: #ef4444;
   --c-lung: #0284c7;
@@ -19,11 +18,10 @@
   --c-teal: #0d9488;
   --c-green: #22c55e;
   --c-yellow: #ffd60a;
-  --c-cyan: #00f0ff;
 
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 12px 36px rgba(0, 240, 255, 0.2);
+  --shadow-sm: 2px 2px 0 var(--ink-line);
+  --shadow-md: 4px 4px 0 var(--ink-line);
+  --shadow-lg: 6px 6px 0 var(--ink-line);
 
   --radius-sm: 12px;
   --radius-md: 20px;
@@ -42,9 +40,8 @@
 }
 
 body {
-  background-color: #060913;
-  background-image: radial-gradient(circle at 50% -20%, #0d1e3d 0%, #060913 75%);
-  color: #f8fafc;
+  background-color: var(--bg-creamy);
+  color: var(--ink-line);
   font-family: var(--font-body);
   line-height: 1.4;
   overflow-x: hidden;
@@ -64,13 +61,12 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(8, 14, 26, 0.92);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-bottom: 1px solid rgba(0, 240, 255, 0.25);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border-bottom: 2px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   padding: 8px 16px;
-  color: #f8fafc;
 }
 
 .topbar-content {
@@ -170,34 +166,29 @@ body {
   padding: 4px;
   border-radius: var(--radius-pill);
   border: 1.5px solid rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
 }
 
 .nav-pill-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-pill);
-  padding: 7px 16px;
+  padding: 6px 14px;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
-  color: #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
+  color: var(--ink-line);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
 }
 
 .nav-pill-btn:hover {
   transform: translateY(-2px);
-  background: rgba(30, 41, 59, 0.95);
-  border-color: var(--c-cyan);
-  color: #ffffff;
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
+  box-shadow: var(--shadow-md);
+  background: #f8fafc;
 }
 
 .nav-pill-btn:active {
@@ -210,47 +201,45 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #f59e0b, #eab308);
-  border: 1px solid rgba(253, 224, 71, 0.5);
+  background: linear-gradient(135deg, #fef08a, #facc15);
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-pill);
-  padding: 7px 16px;
+  padding: 6px 14px;
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 900;
-  color: #0f172a;
-  box-shadow: 0 0 20px rgba(234, 179, 8, 0.35);
+  color: #713f12;
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .nav-vip-jewel:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 0 25px rgba(234, 179, 8, 0.6);
+  box-shadow: var(--shadow-md);
 }
 
 /* Settings Capsule */
 .settings-capsule {
   display: flex;
   align-items: center;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-pill);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  padding: 3px 8px;
-  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+  padding: 2px 6px;
 }
 
 .capsule-btn {
   background: transparent;
   border: none;
   padding: 6px 8px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 800;
-  color: #94a3b8;
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  transition: background 0.15s ease;
 }
 
 .capsule-btn:hover {
@@ -455,25 +444,21 @@ main {
 }
 
 .mode-card {
-  background: rgba(11, 19, 37, 0.88);
-  border: 1.5px solid rgba(0, 240, 255, 0.25);
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
   padding: 24px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: #f8fafc;
 }
 
 .mode-card:hover {
   transform: translateY(-5px);
-  border-color: #00f0ff;
-  box-shadow: 0 14px 40px rgba(0, 240, 255, 0.25);
-  background: rgba(16, 28, 54, 0.95);
+  box-shadow: var(--shadow-lg);
 }
 
 .mode-card-top {
@@ -488,22 +473,19 @@ main {
   font-weight: 900;
   padding: 4px 10px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  background: rgba(0, 240, 255, 0.15);
-  color: #00f0ff;
+  border: 1.5px solid var(--ink-line);
 }
 
 .mode-icon-circle {
   width: 58px;
   height: 58px;
-  border: 1.5px solid rgba(0, 240, 255, 0.4);
+  border: 2.5px solid var(--ink-line);
   border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  background: rgba(7, 12, 22, 0.9);
-  box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .mode-title {
@@ -511,27 +493,24 @@ main {
   font-size: 22px;
   font-weight: 900;
   margin-bottom: 8px;
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 .mode-desc {
   font-size: 14px;
-  font-weight: 600;
-  color: #94a3b8;
+  font-weight: 700;
+  color: #64748b;
   margin-bottom: 20px;
-  line-height: 1.4;
 }
 
 /* Progressive Curriculum Levels Selector */
 .levels-selector-wrapper {
-  background: rgba(11, 19, 37, 0.88);
-  border: 1.5px solid rgba(0, 240, 255, 0.25);
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-md);
   padding: 28px;
   margin-bottom: 32px;
-  color: #f8fafc;
 }
 
 .levels-header-row {
@@ -545,8 +524,6 @@ main {
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 1000;
-  color: #00f0ff;
-  letter-spacing: 0.02em;
 }
 
 .levels-list-grid {
@@ -556,28 +533,25 @@ main {
 }
 
 .level-item-card {
-  background: rgba(15, 25, 48, 0.9);
-  border: 1.5px solid rgba(0, 240, 255, 0.25);
+  background: #f8fafc;
+  border: 2.5px solid var(--ink-line);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-sm);
   padding: 18px;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
-  color: #f8fafc;
 }
 
 .level-item-card:hover {
   transform: translateY(-3px);
-  border-color: #00f0ff;
-  box-shadow: 0 8px 24px rgba(0, 240, 255, 0.3);
-  background: rgba(20, 34, 64, 0.95);
+  box-shadow: var(--shadow-md);
+  background: #ffffff;
 }
 
 .level-item-card.locked {
-  opacity: 0.65;
-  background: rgba(10, 16, 30, 0.7);
-  border-color: #334155;
+  opacity: 0.75;
+  background: #f1f5f9;
 }
 
 .level-card-top {
@@ -590,9 +564,8 @@ main {
 .level-num-pill {
   font-size: 12px;
   font-weight: 900;
-  background: rgba(0, 240, 255, 0.15);
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  color: #00f0ff;
+  background: #ffffff;
+  border: 1.5px solid var(--ink-line);
   border-radius: var(--radius-pill);
   padding: 3px 10px;
 }
@@ -602,13 +575,12 @@ main {
   font-size: 17px;
   font-weight: 900;
   margin-bottom: 6px;
-  color: #f8fafc;
 }
 
 .level-subtitle {
   font-size: 13px;
-  font-weight: 600;
-  color: #94a3b8;
+  font-weight: 700;
+  color: #64748b;
   margin-bottom: 12px;
 }
 
@@ -619,24 +591,22 @@ main {
 }
 
 .organ-mini-chip {
-  background: rgba(2, 132, 199, 0.2);
-  border: 1px solid rgba(0, 240, 255, 0.4);
+  background: #e0f2fe;
+  border: 1px solid #0284c7;
   font-size: 11px;
   font-weight: 800;
-  color: #38bdf8;
+  color: #0369a1;
   padding: 2px 8px;
   border-radius: var(--radius-pill);
 }
 
-/* Mode 1: Organ Assembly Stage (3D Holographic Surgical Workstation) */
-.assembly-game-wrapper, .dark-medical-workstation {
-  background: rgba(11, 19, 37, 0.85);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+/* Mode 1: Organ Assembly Stage */
+.assembly-game-wrapper, .scanner-game-wrapper, .clinic-game-wrapper {
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 32px rgba(0, 240, 255, 0.1);
-  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-md);
   padding: 24px;
-  color: #f8fafc;
 }
 
 .assembly-header, .scanner-header, .clinic-header {
@@ -652,60 +622,30 @@ main {
   font-family: var(--font-display);
   font-size: 26px;
   font-weight: 1000;
-  color: #f8fafc;
 }
 
-.assembly-desc {
-  font-size: 13px;
-  color: #94a3b8;
-  margin-top: 4px;
-}
-
-.assembly-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.assembly-progress-capsule {
-  background: #070e1c;
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  border-radius: var(--radius-pill);
-  padding: 6px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.progress-pct-badge {
-  font-size: 12px;
-  font-weight: 900;
-  color: #00f0ff;
-}
 
 .assembly-stage-layout {
   display: grid;
   grid-template-columns: 460px 1fr;
-  gap: 28px;
+  gap: 24px;
   align-items: start;
 }
 
-/* 3D Operating Theater Mannequin Canvas */
 .assembly-operating-theater {
   position: relative;
-  background: #02050b;
-  border: 2px solid rgba(0, 240, 255, 0.4);
+  background: #060b17;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.15), 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .mannequin-viewport-box {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  min-height: 520px;
+  min-height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -717,16 +657,16 @@ main {
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.35));
+  filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.4));
 }
 
 .theater-scan-grid {
   position: absolute;
   inset: 0;
-  background-size: 30px 30px;
+  background-size: 28px 28px;
   background-image: 
-    linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 240, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
   pointer-events: none;
 }
 
@@ -766,16 +706,16 @@ main {
 }
 
 .docking-socket.unplaced {
-  background: rgba(0, 240, 255, 0.12);
-  border: 2px dashed rgba(0, 240, 255, 0.7);
-  box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
+  background: rgba(0, 240, 255, 0.15);
+  border: 2px dashed rgba(0, 240, 255, 0.8);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
 }
 
 .docking-socket.unplaced:hover,
 .docking-socket.is-targeted {
   border-color: #ffd60a;
-  background: rgba(255, 214, 10, 0.25);
-  box-shadow: 0 0 24px rgba(255, 214, 10, 0.8);
+  background: rgba(255, 214, 10, 0.3);
+  box-shadow: 0 0 24px rgba(255, 214, 10, 0.85);
   transform: translate(-50%, -50%) scale(1.15);
 }
 
@@ -809,7 +749,7 @@ main {
   font-size: 16px;
   font-weight: 900;
   color: #00f0ff;
-  opacity: 0.8;
+  opacity: 0.85;
   pointer-events: none;
 }
 
@@ -841,7 +781,6 @@ main {
   to { transform: translateX(-50%) translateY(-4px); }
 }
 
-/* Placed Organ Embedded in Body */
 .placed-organ-embedded {
   position: relative;
   width: 100%;
@@ -872,7 +811,7 @@ main {
   right: -2px;
   width: 16px;
   height: 16px;
-  background: #10b981;
+  background: #16a34a;
   color: #ffffff;
   border-radius: 50%;
   font-size: 10px;
@@ -880,7 +819,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 8px #10b981;
+  box-shadow: 0 0 8px #16a34a;
 }
 
 .theater-telemetry-hud {
@@ -911,19 +850,19 @@ main {
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 900;
-  color: #f8fafc;
+  color: var(--ink-line);
 }
 
 .tray-sub {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--ink-soft);
 }
 
 .tray-cards-scrollable {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 540px;
+  max-height: 520px;
   overflow-y: auto;
   padding-right: 6px;
 }
@@ -932,41 +871,41 @@ main {
   width: 6px;
 }
 .tray-cards-scrollable::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 999px;
 }
 
 .surgical-specimen-card {
-  background: rgba(13, 22, 42, 0.92);
-  border: 1px solid rgba(0, 240, 255, 0.25);
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-md);
   padding: 14px;
   display: grid;
   grid-template-columns: 88px 1fr;
   gap: 14px;
   align-items: center;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .surgical-specimen-card:hover {
-  border-color: #00f0ff;
+  border-color: #0284c7;
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 240, 255, 0.2);
-  background: rgba(18, 30, 56, 0.95);
+  box-shadow: var(--shadow-md);
+  background: #f8fafc;
 }
 
 .surgical-specimen-card.is-selected-specimen {
-  border-color: #ffd60a !important;
-  background: rgba(30, 41, 69, 0.98);
-  box-shadow: 0 0 20px rgba(255, 214, 10, 0.35);
+  border-color: #eab308 !important;
+  background: #fefce8;
+  box-shadow: 0 0 0 3px #eab308;
 }
 
 .surgical-specimen-card.is-placed-specimen {
-  opacity: 0.75;
-  border-color: rgba(16, 185, 129, 0.4);
-  background: rgba(9, 20, 32, 0.8);
+  opacity: 0.85;
+  border-color: #16a34a;
+  background: #f0fdf4;
 }
 
 .specimen-card-visual {
@@ -975,11 +914,12 @@ main {
   height: 88px;
   border-radius: 10px;
   overflow: hidden;
-  background: #050811;
-  border: 1.5px solid rgba(0, 240, 255, 0.4);
+  background: #070b14;
+  border: 1.5px solid var(--ink-line);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .specimen-3d-thumb {
@@ -990,27 +930,28 @@ main {
 
 .specimen-3d-badge {
   position: absolute;
-  bottom: 3px;
-  right: 3px;
+  bottom: 4px;
+  right: 4px;
   background: rgba(7, 11, 20, 0.85);
   color: #00f0ff;
   font-size: 8px;
   font-weight: 900;
-  padding: 1px 4px;
+  padding: 1px 5px;
   border-radius: 3px;
-  border: 1px solid rgba(0, 240, 255, 0.4);
+  border: 1px solid #00f0ff;
 }
 
 .specimen-docked-tag {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  background: #10b981;
+  inset: 0;
+  background: rgba(22, 163, 74, 0.85);
   color: #ffffff;
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 900;
-  padding: 2px 5px;
-  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
 }
 
 .specimen-card-content {
@@ -1019,221 +960,182 @@ main {
   gap: 4px;
 }
 
-.specimen-meta-row {
+.specimen-card-meta {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 10px;
-  font-weight: 800;
 }
 
-.specimen-title {
+.specimen-system-tag {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.specimen-organ-name {
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 900;
-  color: #f8fafc;
+  color: var(--ink-line);
 }
 
-.specimen-summary {
+.specimen-latin {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.specimen-summary-snippet {
   font-size: 12px;
-  color: #94a3b8;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  color: #334155;
+  line-height: 1.35;
+  margin: 4px 0 6px;
 }
 
 .specimen-actions-row {
   display: flex;
   gap: 8px;
-  margin-top: 6px;
+  align-items: center;
 }
 
 .btn-dock-organ {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  background: #0284c7;
   color: #ffffff;
-  border: 1px solid #00f0ff;
-  border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 240, 255, 0.3);
-  transition: all 0.15s ease;
-}
-
-.btn-dock-organ:hover,
-.btn-dock-organ.btn-dock-active {
-  background: #ffd60a;
-  color: #070b14;
-  border-color: #ffd60a;
-  box-shadow: 0 0 14px rgba(255, 214, 10, 0.8);
-}
-
-.btn-inspect-docked {
-  background: #0f172a;
-  color: #38bdf8;
-  border: 1px solid #334155;
-  border-radius: var(--radius-sm);
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.btn-listen-mini {
-  background: #1e293b;
-  color: #f8fafc;
-  border: 1px solid #334155;
-  border-radius: var(--radius-sm);
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.btn-listen-mini:hover {
-  border-color: #00f0ff;
-  color: #00f0ff;
-}
-
-/* Active Organ Inspection Drawer */
-.assembly-drawer-card {
-  background: rgba(8, 14, 28, 0.95);
-  border: 1.5px solid #00f0ff;
-  border-radius: var(--radius-md);
-  padding: 18px;
-  margin-top: 20px;
-  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.2);
-  animation: slideDrawer 0.25s ease;
-}
-
-@keyframes slideDrawer {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.drawer-name {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 900;
-  color: #f8fafc;
-}
-
-.drawer-latin {
-  font-size: 14px;
-  font-style: italic;
-  color: #00f0ff;
-  font-weight: 700;
-}
-
-.drawer-body-grid {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 20px;
-  align-items: center;
-}
-
-.drawer-render-large {
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 2px solid #00f0ff;
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
-}
-
-.drawer-desc {
-  font-size: 13px;
-  color: #e2e8f0;
-  line-height: 1.5;
-  margin-bottom: 10px;
-}
-
-.drawer-fact-box {
-  background: rgba(14, 165, 233, 0.12);
-  border: 1px solid rgba(14, 165, 233, 0.4);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #bae6fd;
-  margin-bottom: 8px;
-}
-
-.drawer-tip-box {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #a7f3d0;
-}
-
-@keyframes slideDrawer {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.drawer-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.drawer-organ-name {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.drawer-latin-italic {
-  font-size: 12px;
-  font-style: italic;
-  color: #64748b;
-}
-
-.drawer-badge {
-  font-size: 11px;
-  font-weight: 900;
-  padding: 2px 8px;
+  border: 1.5px solid var(--ink-line);
   border-radius: var(--radius-pill);
-  margin-bottom: 4px;
-  display: inline-block;
-}
-
-.btn-neo-sound {
-  background: #f0fdf4;
-  color: #166534;
-  border: 2px solid var(--ink-line);
-  border-radius: var(--radius-pill);
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
 }
 
-.drawer-fun-fact, .drawer-health-tip {
-  background: #f8fafc;
-  border-left: 4px solid #0284c7;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-top: 10px;
+.btn-dock-organ:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+}
+
+.btn-specimen-audio {
+  background: #f1f5f9;
+  color: var(--ink-line);
+  border: 1.5px solid var(--ink-line);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.btn-specimen-audio:hover {
+  background: #e2e8f0;
+}
+
+/* Assembly Placed Organ Drawer */
+.assembly-drawer-card {
+  background: #ffffff;
+  border: 2.5px solid var(--ink-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 22px;
+  margin-top: 24px;
+  color: var(--ink-line);
+  animation: slideDrawer 0.25s ease;
+}
+
+.drawer-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink-line);
+}
+
+.drawer-latin {
   font-size: 13px;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.drawer-metrics-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.drawer-chip {
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.drawer-content-body {
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.45;
+  margin: 10px 0;
+}
+
+.drawer-fun-fact {
+  background: #fefce8;
+  border: 1.5px solid #fef08a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #713f12;
+  margin: 10px 0;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .drawer-health-tip {
-  border-left-color: #22c55e;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #166534;
+  margin: 10px 0;
+  font-size: 13px;
+  font-weight: 700;
 }
 
+.drawer-voice-btn {
+  background: #0284c7;
+  color: #ffffff;
+  border: 2px solid var(--ink-line);
+  border-radius: var(--radius-pill);
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn-finish-surgery {
+  background: #16a34a;
+  color: #ffffff;
+  border: 2.5px solid var(--ink-line);
+  border-radius: var(--radius-pill);
+  padding: 10px 24px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  margin-top: 14px;
+}
 /* Mode 2: Multi-Layer Scanner */
 .scanner-layer-tabs {
   display: flex;
@@ -1388,10 +1290,10 @@ main {
 }
 
 .organ-spotlight-card {
-  background: rgba(11, 19, 37, 0.92);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-md);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-md);
   padding: 24px;
 }
 
@@ -1406,20 +1308,19 @@ main {
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 1000;
-  color: #f8fafc;
 }
 
 .spotlight-latin {
   font-size: 13px;
   font-style: italic;
-  color: #94a3b8;
+  color: #64748b;
   display: block;
 }
 
 .spotlight-tagline {
   font-size: 14px;
   font-weight: 800;
-  color: var(--c-cyan);
+  color: #0284c7;
 }
 
 .spotlight-actions {
@@ -1430,12 +1331,11 @@ main {
 }
 
 .facts-box, .tip-box {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #f8fafc;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-sm);
   padding: 14px;
   margin-top: 14px;
-  color: #e2e8f0;
 }
 
 .facts-list {
@@ -1443,7 +1343,6 @@ main {
   margin-top: 6px;
   font-size: 14px;
   font-weight: 700;
-  color: #cbd5e1;
 }
 
 /* Mode 3: Clinic Game */
@@ -1454,12 +1353,11 @@ main {
 }
 
 .patient-chart-card, .diagnostic-action-card {
-  background: rgba(11, 19, 37, 0.92);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: #f8fafc;
+  border: 2.5px solid var(--ink-line);
   border-radius: var(--radius-md);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-sm);
   padding: 22px;
-  color: #f8fafc;
 }
 
 .patient-card-header {
@@ -1471,17 +1369,17 @@ main {
 
 .patient-avatar-emoji {
   font-size: 42px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(0, 240, 255, 0.4);
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
   border-radius: 16px;
   padding: 6px;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .complaint-text {
   font-size: 16px;
   font-weight: 900;
-  color: #fb7185;
+  color: #b91c1c;
   margin: 6px 0 10px;
 }
 
@@ -1493,40 +1391,33 @@ main {
 }
 
 .tool-btn {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-sm);
   padding: 10px;
   font-size: 13px;
   font-weight: 900;
-  color: #e2e8f0;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
 }
 
-.tool-btn:hover {
-  background: rgba(30, 41, 59, 0.95);
-  border-color: var(--c-cyan);
-  color: #ffffff;
-}
-
 .tool-btn.tool-active {
-  background: rgba(0, 240, 255, 0.15);
-  border-color: var(--c-cyan);
-  color: #00f0ff;
+  background: #e0f2fe;
+  border-color: #0284c7;
+  color: #0369a1;
   transform: translateY(-2px);
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .exam-result-banner {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid #10b981;
+  background: #f0fdf4;
+  border: 2px solid #22c55e;
   border-radius: var(--radius-sm);
   padding: 12px;
   margin-top: 12px;
   font-size: 13px;
-  color: #6ee7b7;
+  color: #166534;
 }
 
 .organ-choices-grid {
@@ -1537,28 +1428,27 @@ main {
 }
 
 .organ-choice-card {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-md);
   padding: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
 }
 
 .organ-choice-card:hover {
   transform: translateY(-3px);
-  border-color: var(--c-cyan);
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
+  box-shadow: var(--shadow-md);
 }
 
 .organ-choice-card.choice-correct {
   border-color: #22c55e;
-  background: rgba(34, 197, 94, 0.2);
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.4);
+  background: #f0fdf4;
+  box-shadow: 0 0 0 3px #22c55e;
 }
 
 .prescription-box {
@@ -1725,8 +1615,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: #f8fafc;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-md);
   margin-bottom: 20px;
   overflow: hidden;
@@ -1734,12 +1624,11 @@ main {
 
 /* Leaderboard Ranking View */
 .leaderboard-wrapper {
-  background: rgba(11, 19, 37, 0.92);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
   padding: 28px;
-  color: #f8fafc;
 }
 
 .leaderboard-list {
@@ -1753,28 +1642,26 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #f8fafc;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-md);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-sm);
   padding: 14px 20px;
-  color: #f8fafc;
 }
 
-.rank-row.rank-1 { background: rgba(234, 179, 8, 0.15); border-color: #eab308; box-shadow: 0 0 15px rgba(234, 179, 8, 0.2); }
-.rank-row.rank-2 { background: rgba(148, 163, 184, 0.15); border-color: #94a3b8; }
-.rank-row.rank-3 { background: rgba(249, 115, 22, 0.15); border-color: #f97316; }
-.rank-row.current-player { border: 2px solid var(--c-cyan); background: rgba(0, 240, 255, 0.12); box-shadow: 0 0 15px rgba(0, 240, 255, 0.25); }
+.rank-row.rank-1 { background: #fefce8; border-color: #eab308; }
+.rank-row.rank-2 { background: #f8fafc; border-color: #94a3b8; }
+.rank-row.rank-3 { background: #fff7ed; border-color: #f97316; }
+.rank-row.current-player { border: 3px solid #0284c7; background: #e0f2fe; }
 
 /* Parent Guide Cards */
 .guide-card-section {
-  background: rgba(11, 19, 37, 0.92);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
   padding: 28px;
   margin-bottom: 24px;
-  color: #f8fafc;
 }
 
 .phases-grid, .experiments-grid {
@@ -1785,22 +1672,20 @@ main {
 }
 
 .phase-card, .experiment-card {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #f8fafc;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-md);
   padding: 18px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  color: #e2e8f0;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Printable Worksheets & Certificate */
 .worksheet-view-wrapper {
-  background: rgba(11, 19, 37, 0.92);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
   padding: 28px;
-  color: #f8fafc;
 }
 
 .worksheet-header {
@@ -1818,24 +1703,21 @@ main {
 }
 
 .ws-tab-btn {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
   border-radius: var(--radius-pill);
   padding: 8px 16px;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 800;
-  color: #e2e8f0;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .ws-tab-btn.active {
-  background: var(--c-cyan);
-  color: #020617;
-  border-color: var(--c-cyan);
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: var(--shadow-md);
 }
 
 .print-sheet {
@@ -2593,3 +2475,98 @@ main {
   justify-content: center;
 }
 
+
+/* High-Contrast 3D Medical Render Styles for Atlas & Scanner */
+.atlas-real-render-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #070b14;
+  border: 2px solid var(--ink-line);
+  margin: 10px 0;
+}
+
+.atlas-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.atlas-3d-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(7, 11, 20, 0.85);
+  color: #00f0ff;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #00f0ff;
+}
+
+.atlas-metrics-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0;
+}
+
+.atlas-metric-chip {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.atlas-summary-text {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.45;
+  margin: 8px 0;
+}
+
+.atlas-fun-fact-box {
+  background: #fefce8;
+  border: 1.5px solid #fef08a;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 8px 0;
+  color: #713f12;
+  font-size: 12px;
+}
+
+.atlas-health-tip-box {
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 8px 0;
+  color: #166534;
+  font-size: 12px;
+}
+
+.btn-card-narrate {
+  background: #0284c7;
+  color: #ffffff;
+  border: 2px solid var(--ink-line);
+  border-radius: var(--radius-pill);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.btn-card-narrate:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+}

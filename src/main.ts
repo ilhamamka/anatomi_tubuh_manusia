@@ -134,11 +134,11 @@ class App {
 
     const profile = leaderboard.getProfile();
     container.innerHTML = `
-      <div style="background:rgba(11, 19, 37, 0.92); border:1px solid rgba(0, 240, 255, 0.35); border-radius:var(--radius-pill); padding:6px 14px; display:flex; align-items:center; gap:8px; box-shadow:0 0 15px rgba(0,240,255,0.15); backdrop-filter:blur(10px);">
+      <div style="background:#ffffff; border:2px solid var(--ink-line); border-radius:var(--radius-pill); padding:6px 14px; display:flex; align-items:center; gap:8px; box-shadow:var(--shadow-sm); cursor:pointer;">
         <span style="font-size:18px;">${profile.avatar}</span>
         <div style="line-height:1.2;">
-          <strong style="font-size:13px; display:block; color:#f8fafc;">${profile.name}</strong>
-          <span style="font-size:11px; color:#38bdf8; font-weight:800;">${profile.xp} XP · ${profile.stars} ⭐</span>
+          <strong style="font-size:13px; display:block; color:var(--ink-line);">${profile.name}</strong>
+          <span style="font-size:11px; color:#e11d48; font-weight:800;">${profile.xp} XP · ${profile.stars} ⭐</span>
         </div>
       </div>
     `;
@@ -267,14 +267,14 @@ class App {
     if (!raw) return;
 
     if (raw === 'assembly') {
-      this.assemblyGame.startLevel();
       this.switchScreen('screen-assembly', false);
+      this.assemblyGame.startLevel();
     } else if (raw === 'scanner') {
-      this.scannerGame.start();
       this.switchScreen('screen-scanner', false);
+      this.scannerGame.start();
     } else if (raw === 'clinic') {
-      this.clinicGame.start();
       this.switchScreen('screen-clinic', false);
+      this.clinicGame.start();
     } else if (raw === 'chart') {
       this.switchScreen('screen-chart', false);
     } else if (raw === 'sandbox') {
