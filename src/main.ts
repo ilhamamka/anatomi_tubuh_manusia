@@ -4,7 +4,7 @@ import './style.css';
 import { sound } from './audio';
 import { confetti } from './confetti';
 import { leaderboard } from './leaderboard';
-import { commercial } from './commercial';
+import { commercial, COMMERCIAL_PLANS } from './commercial';
 import { ORGANS, CURRICULUM_LEVELS } from './organs-data';
 import { OrganAssemblyGame } from './game-assembly';
 import { BodyScannerGame } from './game-scanner';
@@ -15,6 +15,8 @@ import { ParentGuideRenderer } from './parent-guide';
 import { WorksheetGenerator } from './worksheet';
 import { ShareCardGenerator } from './share-card';
 import { getIcon, renderBrandLogo } from './icons';
+import { QuizManager } from './questions-engine';
+import { PhysiologyFlowSimulator } from './physiology-flow';
 
 class App {
   private currentScreen: string = 'screen-home';
@@ -25,6 +27,8 @@ class App {
   private sandboxManager!: SandboxManager;
   private guideRenderer!: ParentGuideRenderer;
   private worksheetGen!: WorksheetGenerator;
+  private quizManager!: QuizManager;
+  private flowSimulator!: PhysiologyFlowSimulator;
 
   public init() {
     this.renderBrandAndIcons();
@@ -105,10 +109,15 @@ class App {
       }
     });
 
+    const quizRoot = document.getElementById('quiz-root')!;
+    const flowRoot = document.getElementById('flow-root')!;
+
     this.chartManager = new AnatomyChartManager(chartRoot);
     this.sandboxManager = new SandboxManager(sandboxRoot);
     this.guideRenderer = new ParentGuideRenderer(guideRoot);
     this.worksheetGen = new WorksheetGenerator(worksheetsRoot);
+    this.quizManager = new QuizManager(quizRoot);
+    this.flowSimulator = new PhysiologyFlowSimulator(flowRoot);
   }
 
   private renderHeroMascots() {
@@ -221,6 +230,12 @@ class App {
     if (screenId !== 'screen-chart') {
       this.chartManager?.destroy();
     }
+    if (screenId !== 'screen-flow') {
+      this.flowSimulator?.destroy();
+    }
+    if (screenId !== 'screen-quiz') {
+      this.quizManager?.destroy();
+    }
 
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(screenId);
@@ -249,6 +264,10 @@ class App {
       this.worksheetGen.render('certificate');
     } else if (screenId === 'screen-leaderboard') {
       this.renderLeaderboardView();
+    } else if (screenId === 'screen-quiz') {
+      this.quizManager.render();
+    } else if (screenId === 'screen-flow') {
+      this.flowSimulator.render();
     } else if (screenId === 'screen-home') {
       this.renderPlayerProfilePill();
       this.renderCurriculumLevels();
@@ -285,6 +304,10 @@ class App {
       this.switchScreen('screen-leaderboard', false);
     } else if (raw === 'worksheets') {
       this.switchScreen('screen-worksheets', false);
+    } else if (raw === 'quiz') {
+      this.switchScreen('screen-quiz', false);
+    } else if (raw === 'flow') {
+      this.switchScreen('screen-flow', false);
     } else if (raw === 'home') {
       this.switchScreen('screen-home', false);
     }
@@ -333,6 +356,16 @@ class App {
     document.getElementById('btn-nav-chart')?.addEventListener('click', () => {
       sound.playPop();
       this.switchScreen('screen-chart');
+    });
+
+    document.getElementById('btn-nav-flow')?.addEventListener('click', () => {
+      sound.playPop();
+      this.switchScreen('screen-flow');
+    });
+
+    document.getElementById('btn-nav-quiz')?.addEventListener('click', () => {
+      sound.playPop();
+      this.switchScreen('screen-quiz');
     });
 
     document.getElementById('btn-nav-sandbox')?.addEventListener('click', () => {
@@ -389,6 +422,16 @@ class App {
       sound.playPop();
       this.clinicGame.start();
       this.switchScreen('screen-clinic');
+    });
+
+    document.getElementById('card-mode-flow')?.addEventListener('click', () => {
+      sound.playPop();
+      this.switchScreen('screen-flow');
+    });
+
+    document.getElementById('card-mode-quiz')?.addEventListener('click', () => {
+      sound.playPop();
+      this.switchScreen('screen-quiz');
     });
 
     // Audio / BGM / Lang / Fullscreen controls
@@ -462,56 +505,182 @@ class App {
   }
 
   public openVipModal() {
+    const profile = leaderboard.getProfile();
+    const challenge = commercial.generateParentalChallenge();
+    let isParentUnlocked = false;
+
     const modal = document.createElement('div');
     modal.className = 'neo-modal-overlay';
-    modal.innerHTML = `
-      <div class="neo-modal-card">
-        <div style="font-size:42px; margin-bottom:8px;">👑</div>
-        <h2 style="font-family:var(--font-display); font-size:26px; font-weight:1000; margin-bottom:8px;">
-          Akses Penuh VIP Dokter Spesialis
-        </h2>
-        <p style="font-size:14px; font-weight:700; color:#475569; margin-bottom:18px;">
-          Buka seluruh misi Tingkat 3, 4, 5 (Bedah Akurat, Otak & Imun, Rangka 206 Tulang), seluruh lembar kerja cetak, serta fitur laboratorium tak terbatas!
-        </p>
 
-        <div style="background:#f8fafc; border:2px solid var(--ink-line); border-radius:14px; padding:16px; margin-bottom:16px; text-align:left;">
-          <label style="font-size:12px; font-weight:900; color:#0f172a; display:block; margin-bottom:6px;">Masukkan Kode Aktivasi / Lisensi:</label>
-          <input type="text" id="input-vip-code" placeholder="Contoh: ANATOMI-VIP-2026" style="width:100%; padding:10px 12px; border:2px solid var(--ink-line); border-radius:8px; font-family:var(--font-display); font-weight:900; font-size:14px; text-transform:uppercase; margin-bottom:8px;">
-          <small style="color:#64748b; font-size:11px; font-weight:700;">💡 Kode aktivasi uji coba: <strong>ANATOMI-VIP-2026</strong> atau <strong>DOKTER-INDONESIA</strong></small>
+    const renderModalContent = () => {
+      const currentLimit = commercial.getScreenTimeLimit();
+
+      modal.innerHTML = `
+        <div class="neo-modal-card commercial-checkout-modal" style="max-width:860px; max-height:92vh; overflow-y:auto; text-align:left;">
+          <!-- Top Header -->
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--ink-line); padding-bottom:14px; margin-bottom:16px;">
+            <div>
+              <span style="font-size:11px; font-weight:900; background:#fef3c7; color:#b45309; padding:4px 10px; border-radius:999px; border:2px solid var(--ink-line); display:inline-block; margin-bottom:6px;">👑 LISENSI RESMI & UPGRADE VIP</span>
+              <h2 style="font-family:var(--font-display); font-size:24px; font-weight:1000; margin:4px 0;">
+                Akses Penuh Seluruh Laboratorium Anatomi & Kuis Medis
+              </h2>
+              <p style="font-size:13px; font-weight:700; color:#64748b; margin:0;">
+                Buka seluruh 5 Tingkat Misi Bedah Organ, Bank Soal Kurikulum Merdeka, Simulator Fisiologi, & Lembar Kerja Cetak A4.
+              </p>
+            </div>
+            <button id="btn-close-vip-x" class="btn-neo-secondary btn-sm" type="button" style="padding:4px 10px; font-size:16px;">✕</button>
+          </div>
+
+          <!-- Parental Gate Check -->
+          ${!isParentUnlocked ? `
+            <div class="parental-gate-card" style="background:#fffbeb; border:2px dashed #f59e0b; border-radius:12px; padding:14px 18px; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <span style="font-size:24px;">🔒</span>
+                <div>
+                  <strong style="font-size:14px; color:#92400e; display:block;">Pintu Pengaman Orang Tua & Guru (Parental Gate)</strong>
+                  <span style="font-size:12px; color:#78350f;">Mohon selesaikan perhitungan berikut sebelum memesan lisensi atau mengatur batas waktu:</span>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <label style="font-weight:900; font-size:15px; color:#1e293b;">${challenge.question}</label>
+                <input type="number" id="input-parental-answer" placeholder="Jawaban" style="width:100px; padding:6px 10px; border:2px solid var(--ink-line); border-radius:8px; font-weight:900; font-size:15px; text-align:center;">
+                <button id="btn-verify-parent" class="btn-neo-primary btn-sm" type="button">Buka Akses Orang Tua 🔓</button>
+              </div>
+              <p id="parental-error-msg" style="color:#e11d48; font-size:12px; font-weight:800; margin:6px 0 0; display:none;">
+                Jawaban belum tepat, silakan coba lagi ya Ayah/Bunda/Guru!
+              </p>
+            </div>
+          ` : `
+            <div style="background:#f0fdf4; border:2px solid #22c55e; border-radius:10px; padding:8px 14px; margin-bottom:18px; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">✅</span>
+              <span style="font-size:12px; font-weight:800; color:#15803d;">Verifikasi Orang Tua Berhasil. Menu Pembelian & Batas Waktu Terbuka.</span>
+            </div>
+          `}
+
+          <!-- Pricing Packages Grid -->
+          <div class="commercial-plans-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-bottom:24px;">
+            ${COMMERCIAL_PLANS.map(plan => `
+              <div class="commercial-plan-card ${plan.isPopular ? 'popular-plan' : ''}" style="background:#ffffff; border:3px solid var(--ink-line); border-radius:14px; padding:18px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:var(--shadow-sm); position:relative;">
+                ${plan.isPopular ? `<span style="position:absolute; top:-12px; right:16px; background:#e11d48; color:#ffffff; font-size:11px; font-weight:900; padding:3px 10px; border-radius:999px; border:2px solid var(--ink-line);">⭐ PALING LARIS</span>` : ''}
+                <div>
+                  <span style="display:inline-block; font-size:11px; font-weight:900; background:#f1f5f9; color:#475569; padding:3px 8px; border-radius:6px; margin-bottom:6px;">${plan.badge}</span>
+                  <h3 style="font-family:var(--font-display); font-size:18px; font-weight:900; margin:0 0 4px;">${plan.name}</h3>
+                  <div style="margin-bottom:8px;">
+                    <span style="text-decoration:line-through; color:#94a3b8; font-size:13px; font-weight:700;">${plan.originalPrice}</span>
+                    <span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:900; padding:2px 6px; border-radius:4px; margin-left:6px;">${plan.discountBadge}</span>
+                    <div style="font-size:26px; font-weight:1000; color:#e11d48; font-family:var(--font-display);">${plan.price}</div>
+                  </div>
+                  <p style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:12px; border-bottom:1px dashed #cbd5e1; padding-bottom:8px;">${plan.targetAudience}</p>
+                  
+                  <ul style="margin:0 0 16px; padding-left:18px; font-size:12px; font-weight:700; color:#334155; line-height:1.5;">
+                    ${plan.features.map(f => `<li style="margin-bottom:4px;">${f}</li>`).join('')}
+                  </ul>
+                </div>
+
+                <div>
+                  ${isParentUnlocked ? `
+                    <a href="${commercial.getWhatsAppOrderUrl(plan.id, profile.name)}" target="_blank" rel="noopener noreferrer" class="btn-neo-primary" style="display:block; text-align:center; text-decoration:none; padding:10px 14px; font-size:13px; background:#22c55e; border-color:var(--ink-line); color:#ffffff; margin-top:10px;">
+                      💬 Pesan via WhatsApp Sekarang
+                    </a>
+                  ` : `
+                    <button class="btn-neo-secondary btn-locked-plan" type="button" style="width:100%; font-size:12px; padding:8px 12px; margin-top:10px;" data-plan-id="${plan.id}">
+                      🔒 Buka Pengaman untuk Pesan
+                    </button>
+                  `}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Section: Screen Time Limiter (For Parents) -->
+          <div style="background:#f8fafc; border:2px solid var(--ink-line); border-radius:12px; padding:14px 18px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>
+                <h4 style="margin:0; font-size:14px; font-weight:900;">⏱️ Pembatas Waktu Layar Sehat (Screen Time)</h4>
+                <p style="margin:2px 0 0; font-size:11px; color:#64748b; font-weight:700;">Batasi durasi anak bermain demi kesehatan mata dan kebiasaan digital yang seimbang.</p>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <select id="select-screen-limit" style="padding:6px 10px; border:2px solid var(--ink-line); border-radius:8px; font-weight:800; font-size:13px;" ${!isParentUnlocked ? 'disabled' : ''}>
+                  <option value="0" ${currentLimit === 0 ? 'selected' : ''}>Tidak Dibatasi (Bebas)</option>
+                  <option value="15" ${currentLimit === 15 ? 'selected' : ''}>15 Menit / Hari</option>
+                  <option value="30" ${currentLimit === 30 ? 'selected' : ''}>30 Menit / Hari</option>
+                  <option value="45" ${currentLimit === 45 ? 'selected' : ''}>45 Menit / Hari</option>
+                  <option value="60" ${currentLimit === 60 ? 'selected' : ''}>60 Menit / Hari</option>
+                </select>
+                <button id="btn-save-limit" class="btn-neo-secondary btn-sm" type="button" ${!isParentUnlocked ? 'disabled' : ''}>Simpan 💾</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: License Code Activation -->
+          <div style="background:#ffffff; border:2px solid var(--ink-line); border-radius:12px; padding:16px;">
+            <label style="font-size:13px; font-weight:900; color:#0f172a; display:block; margin-bottom:6px;">Sudah Punya Kode Lisensi VIP?</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <input type="text" id="input-vip-code" placeholder="Contoh: ANATOMI-VIP-2026" style="flex:1; min-width:200px; padding:10px 12px; border:2px solid var(--ink-line); border-radius:8px; font-family:var(--font-display); font-weight:900; font-size:14px; text-transform:uppercase;">
+              <button id="btn-submit-code" class="btn-neo-primary" type="button">Aktifkan Lisensi ⭐</button>
+            </div>
+            <small style="color:#64748b; font-size:11px; font-weight:700; display:block; margin-top:6px;">
+              💡 Kode aktivasi uji coba: <strong>ANATOMI-VIP-2026</strong> atau <strong>DOKTER-INDONESIA</strong>
+            </small>
+          </div>
         </div>
+      `;
 
-        <div style="display:flex; gap:10px; justify-content:center;">
-          <button id="btn-submit-code" class="btn-neo-primary" type="button">Aktifkan Lisensi ⭐</button>
-          <button id="btn-close-vip" class="btn-neo-secondary" type="button">Tutup</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    const submitBtn = modal.querySelector('#btn-submit-code');
-    const input = modal.querySelector('#input-vip-code') as HTMLInputElement;
-
-    submitBtn?.addEventListener('click', () => {
-      const code = input.value;
-      const res = commercial.activateWithCode(code);
-      if (res.success) {
-        sound.playFanfare();
-        confetti.burst(100);
-        alert(res.message);
+      // Bind events inside modal
+      modal.querySelector('#btn-close-vip-x')?.addEventListener('click', () => {
+        sound.playPop();
         modal.remove();
-        this.updateAudioIcons();
-        this.renderCurriculumLevels();
-      } else {
-        sound.playWrong();
-        alert(res.message);
-      }
-    });
+      });
 
-    modal.querySelector('#btn-close-vip')?.addEventListener('click', () => {
-      sound.playPop();
-      modal.remove();
-    });
+      modal.querySelector('#btn-verify-parent')?.addEventListener('click', () => {
+        const input = modal.querySelector('#input-parental-answer') as HTMLInputElement;
+        const ans = parseInt(input?.value || '0', 10);
+        if (commercial.verifyParentalChallenge(ans)) {
+          isParentUnlocked = true;
+          sound.playPop();
+          renderModalContent();
+        } else {
+          sound.playWrong();
+          const err = modal.querySelector('#parental-error-msg') as HTMLElement;
+          if (err) err.style.display = 'block';
+        }
+      });
+
+      modal.querySelectorAll('.btn-locked-plan').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = modal.querySelector('#input-parental-answer') as HTMLInputElement;
+          input?.focus();
+        });
+      });
+
+      modal.querySelector('#btn-save-limit')?.addEventListener('click', () => {
+        const sel = modal.querySelector('#select-screen-limit') as HTMLSelectElement;
+        const mins = parseInt(sel?.value || '0', 10);
+        commercial.setScreenTimeLimit(mins);
+        sound.playPop();
+        alert(`Batas waktu berhasil disimpan: ${mins === 0 ? 'Tidak Dibatasi' : mins + ' Menit'}!`);
+      });
+
+      modal.querySelector('#btn-submit-code')?.addEventListener('click', () => {
+        const codeInput = modal.querySelector('#input-vip-code') as HTMLInputElement;
+        const code = codeInput?.value || '';
+        const res = commercial.activateWithCode(code);
+        if (res.success) {
+          sound.playFanfare();
+          confetti.burst(100);
+          alert(res.message);
+          modal.remove();
+          this.updateAudioIcons();
+          this.renderCurriculumLevels();
+        } else {
+          sound.playWrong();
+          alert(res.message);
+        }
+      });
+    };
+
+    renderModalContent();
+    document.body.appendChild(modal);
   }
 
   private openProfileEditorModal() {

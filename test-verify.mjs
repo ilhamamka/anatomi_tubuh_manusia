@@ -136,6 +136,74 @@ for (const p of praises) {
 }
 
 console.log('✅ Natural audio files (12 organs + 6 cases + 6 praises) verified on disk.');
-console.log('✅ Audio engine lifecycle and component destroy contracts verified.');
+// 8. Verify Kurikulum Merdeka Medical Quiz Bank
+import { MEDICAL_QUESTIONS } from './src/questions-engine.ts';
+assert.ok(MEDICAL_QUESTIONS.length >= 30, `Must have at least 30 quiz questions, got ${MEDICAL_QUESTIONS.length}`);
+
+const tierCounts = { 1: 0, 2: 0, 3: 0 };
+for (const q of MEDICAL_QUESTIONS) {
+  assert.ok([1, 2, 3].includes(q.tier), `Question ${q.id} must have tier 1, 2, or 3`);
+  tierCounts[q.tier]++;
+  assert.ok(q.curriculumStandard && q.curriculumStandard.length > 5, `Question ${q.id} must specify curriculum standard`);
+  assert.ok(q.question && q.question.length > 10, `Question ${q.id} must have question text`);
+  assert.equal(q.options.length, 4, `Question ${q.id} must have 4 options`);
+  assert.ok(q.correctIndex >= 0 && q.correctIndex < 4, `Question ${q.id} correctIndex must be 0-3`);
+  assert.ok(q.explanation && q.explanation.length > 10, `Question ${q.id} must have explanation`);
+  assert.ok(q.xpReward >= 25, `Question ${q.id} must reward >= 25 XP`);
+}
+assert.ok(tierCounts[1] >= 10, 'Must have at least 10 Tier 1 questions');
+assert.ok(tierCounts[2] >= 10, 'Must have at least 10 Tier 2 questions');
+assert.ok(tierCounts[3] >= 10, 'Must have at least 10 Tier 3 questions');
+console.log(`✅ 30 Kurikulum Merdeka medical questions verified across Tiers 1, 2, and 3.`);
+
+// 9. Verify Physiology Pathway Simulator
+import { PATHWAYS } from './src/physiology-flow.ts';
+const expectedPathways = ['digestion', 'circulation', 'respiration'];
+for (const pid of expectedPathways) {
+  const p = PATHWAYS[pid];
+  assert.ok(p, `Pathway '${pid}' must exist`);
+  assert.ok(p.title && p.title.length > 0, `Pathway '${pid}' must have title`);
+  assert.ok(p.curriculumBadge && p.curriculumBadge.length > 0, `Pathway '${pid}' must have curriculumBadge`);
+  assert.ok(p.steps.length >= 4, `Pathway '${pid}' must have at least 4 steps`);
+  for (const s of p.steps) {
+    assert.ok(s.stepNumber > 0, 'Step must have stepNumber');
+    assert.ok(s.organName, 'Step must have organName');
+    assert.ok(s.summary, 'Step must have summary');
+    assert.ok(s.narration, 'Step must have kid narration');
+    assert.ok(s.posX >= 0 && s.posX <= 100, 'Step posX must be 0-100');
+    assert.ok(s.posY >= 0 && s.posY <= 100, 'Step posY must be 0-100');
+  }
+}
+console.log('✅ 3 Interactive physiology pathways (Pencernaan, Sirkulasi, Pernapasan) verified.');
+
+// 10. Verify Commercial Plans, WhatsApp Checkout & Parental Gate
+import { COMMERCIAL_PLANS } from './src/commercial.ts';
+assert.equal(COMMERCIAL_PLANS.length, 2, 'Must have 2 commercial plans (Personal & School)');
+assert.equal(COMMERCIAL_PLANS[0].id, 'personal');
+assert.equal(COMMERCIAL_PLANS[1].id, 'school');
+assert.equal(COMMERCIAL_PLANS[0].price, 'Rp 49.000');
+assert.equal(COMMERCIAL_PLANS[1].price, 'Rp 149.000');
+
+const waUrl = commercial.getWhatsAppOrderUrl('personal', 'Budi Santoso');
+assert.ok(waUrl.includes('api.whatsapp.com'), 'WhatsApp URL must target api.whatsapp.com');
+assert.ok(waUrl.includes('Rp%2049.000') || waUrl.includes('Rp 49.000'), 'WhatsApp URL must include plan price');
+
+const challenge = commercial.generateParentalChallenge();
+assert.ok(challenge.question.includes('×'), 'Parental challenge must have arithmetic question');
+assert.equal(commercial.verifyParentalChallenge(999999), false, 'Incorrect answer must fail challenge');
+assert.equal(commercial.verifyParentalChallenge(challenge.answer), true, 'Correct answer must pass challenge');
+
+commercial.setScreenTimeLimit(30);
+assert.equal(commercial.getScreenTimeLimit(), 30, 'Screen time limit should be 30 mins');
+commercial.setScreenTimeLimit(0);
+assert.equal(commercial.getScreenTimeLimit(), 0, 'Screen time limit should be unlimited (0)');
+console.log('✅ Commercial plans (Personal & School), WhatsApp sales link, and Parental Gate verified.');
+
+// 11. Verify New Icons in Suite
+assert.ok(typeof ICONS.quiz === 'function', 'quiz icon must exist');
+assert.ok(typeof ICONS.flow === 'function', 'flow icon must exist');
+assert.ok(ICONS.quiz(20).includes('<svg'), 'quiz icon must render valid SVG');
+assert.ok(ICONS.flow(20).includes('<svg'), 'flow icon must render valid SVG');
+console.log('✅ New quiz and flow SVG icons verified.');
 
 console.log('\n🎉 ALL ANATOMI TUBUH MANUSIA VERIFICATION TESTS PASSED SUCCESSFULLY! 🩺✨\n');

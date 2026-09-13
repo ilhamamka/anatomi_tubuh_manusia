@@ -32,6 +32,12 @@
             <button id="btn-nav-chart" class="nav-pill-btn" type="button" title="Bagan Atlas Lengkap Seluruh Organ">
               <span class="btn-svg-slot" data-icon="chart"></span> <span class="action-text">Atlas</span>
             </button>
+            <button id="btn-nav-flow" class="nav-pill-btn" type="button" title="Simulasi Alur Fisiologi Makanan & Darah" style="background:#eff6ff; border-color:#3b82f6; color:#1d4ed8;">
+              <span class="btn-svg-slot" data-icon="flow"></span> <span class="action-text">Alur Tubuh</span>
+            </button>
+            <button id="btn-nav-quiz" class="nav-pill-btn" type="button" title="Kuis Uji Cerdas Kurikulum Merdeka" style="background:#fefce8; border-color:#eab308; color:#a16207;">
+              <span class="btn-svg-slot" data-icon="quiz"></span> <span class="action-text">Kuis Cerdas</span>
+            </button>
             <button id="btn-nav-sandbox" class="nav-pill-btn" type="button" title="Lab Bebas Eksperimen Organ" style="background:#fdf4ff; border-color:#d946ef; color:#a21caf;">
               <span class="btn-svg-slot" data-icon="sandbox"></span> <span class="action-text">Lab Bebas</span>
             </button>
@@ -141,13 +147,39 @@
           <div class="mode-card" id="card-mode-clinic" role="button" tabindex="0">
             <div>
               <div class="mode-card-top">
-                <span class="mode-badge" style="background:#fefce825; color:#facc15; border-color:#facc15;">MODE UTAMA 3 · KLINIK</span>
+                <span class="mode-badge" style="background:#fefce825; color:#ca8a04; border-color:#eab308;">MODE UTAMA 3 · KLINIK</span>
                 <div class="mode-icon-circle" style="background:#0f172a; color:#facc15;">🏥</div>
               </div>
               <h3 class="mode-title">Klinik Dokter Cilik</h3>
               <p class="mode-desc">Periksa keluhan 6 pasien anak, gunakan stetoskop & sinar-X, tentukan diagnosa organ terganggu, dan resepkan solusi sehat.</p>
             </div>
             <button class="btn-neo-secondary btn-sm" type="button">Buka Klinik Periksa ➡️</button>
+          </div>
+
+          <!-- Mode 4 Card: Physiology Simulator -->
+          <div class="mode-card" id="card-mode-flow" role="button" tabindex="0">
+            <div>
+              <div class="mode-card-top">
+                <span class="mode-badge" style="background:#eff6ff; color:#1d4ed8; border-color:#3b82f6;">MODE 4 · FISIOLOGI</span>
+                <div class="mode-icon-circle" style="background:#1e3a8a; color:#60a5fa;">🌊</div>
+              </div>
+              <h3 class="mode-title">Alur Tubuh & Partikel</h3>
+              <p class="mode-desc">Simulasi jalur perjalanan makanan, sirkulasi peredaran darah besar/kecil, dan oksigen paru-paru dengan partikel menyala.</p>
+            </div>
+            <button class="btn-neo-secondary btn-sm" type="button">Jalankan Simulator ➡️</button>
+          </div>
+
+          <!-- Mode 5 Card: Medical Quiz Assessment -->
+          <div class="mode-card" id="card-mode-quiz" role="button" tabindex="0">
+            <div>
+              <div class="mode-card-top">
+                <span class="mode-badge" style="background:#fefce8; color:#a16207; border-color:#eab308;">MODE 5 · KURIKULUM</span>
+                <div class="mode-icon-circle" style="background:#713f12; color:#fde047;">🎯</div>
+              </div>
+              <h3 class="mode-title">Kuis Uji Cerdas Sains</h3>
+              <p class="mode-desc">30 Soal Kurikulum Merdeka (IPAS SD Fase B/C & Biologi SMP Fase D) dengan penjelasan medis interaktif dan hadiah XP.</p>
+            </div>
+            <button class="btn-neo-secondary btn-sm" type="button">Mulai Uji Cerdas ➡️</button>
           </div>
         </div>
 
@@ -220,6 +252,16 @@
       <!-- SCREEN 9: LEMBAR KERJA CETAK & SERTIFIKAT -->
       <section id="screen-worksheets" class="screen">
         <div id="worksheets-root"></div>
+      </section>
+
+      <!-- SCREEN 10: KUIS UJI CERDAS DOKTER CILIK -->
+      <section id="screen-quiz" class="screen">
+        <div id="quiz-root"></div>
+      </section>
+
+      <!-- SCREEN 11: SIMULATOR ALUR FISIOLOGI -->
+      <section id="screen-flow" class="screen">
+        <div id="flow-root"></div>
       </section>
     </main>
   </div>
