@@ -95,8 +95,7 @@ export class BodyScannerGame {
 
   private narrateOrgan(organ: OrganInfo) {
     sound.stopSpeaking();
-    const narrationText = `Organ ${organ.name}. Nama ilmiah Latin: ${organ.latinName}. ${organ.summary}. ${organ.description}. Fakta medis penting: ${organ.funFacts[0]}. Saran dokter: ${organ.healthTips}`;
-    sound.speak(narrationText);
+    sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`);
   }
 
   private updateSpeechHud(isSpeaking: boolean, text: string) {
@@ -383,7 +382,7 @@ export class BodyScannerGame {
         <!-- Hero Voice & Audio Controls -->
         <div class="spotlight-voice-hero">
           <button id="btn-voice-explain" class="btn-voice-hero ${isSpeaking ? 'speaking-pulse' : ''}" type="button">
-            ${isSpeaking ? '⏹️ HENTIKAN PENJELASAN SUARA DOKTER' : `🔊 DENGARKAN PENJELASAN SUARA: ${activeOrgan.name.toUpperCase()}`}
+            ${isSpeaking ? '⏹️ Hentikan Cerita Dokter' : `📖 Dengarkan Cerita Ceria: ${activeOrgan.name} (${activeOrgan.funTitle})`}
           </button>
           <button id="btn-stethoscope-listen" class="btn-acoustic-listen" type="button">
             🩺 Uji Suara Akustik Organ (${activeOrgan.soundType})

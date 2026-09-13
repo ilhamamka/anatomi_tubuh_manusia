@@ -65,8 +65,8 @@ export class AnatomyChartManager {
                 <span class="atlas-system-badge" style="background:${organ.primaryColor}15; color:${organ.secondaryColor};">
                   ${organ.systemName}
                 </span>
-                <button class="btn-atlas-audio" data-sound-organ="${organ.id}" title="Dengarkan Suara Organ" type="button">
-                  🔊 Dengar
+                <button class="btn-atlas-audio" data-sound-organ="${organ.id}" title="Dengarkan Cerita Ceria Organ" type="button">
+                  📖 Cerita
                 </button>
               </div>
 
@@ -108,8 +108,8 @@ export class AnatomyChartManager {
                   <p>${organ.healthTips}</p>
                 </div>
 
-                <button class="btn-neo-accent btn-sm w-full btn-card-narrate" data-sound-organ="${organ.id}" type="button" style="width:100%; margin-top:12px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                  🔊 Dengarkan Penjelasan Suara Dokter
+                <button class="btn-card-narrate" data-sound-organ="${organ.id}" type="button" style="width:100%; margin-top:12px;">
+                  📖 Dengarkan Cerita Ceria: ${organ.funTitle}
                 </button>
               </div>
             </div>
@@ -146,7 +146,7 @@ export class AnatomyChartManager {
         if (!organ) return;
 
         this.playOrganAcoustic(organ);
-        sound.speak(`Organ ${organ.name}. Nama Latin: ${organ.latinName}. ${organ.summary}. ${organ.description}. Fakta penting: ${organ.funFacts[0]}. Saran dokter: ${organ.healthTips}`);
+        sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`);
       });
     });
   }

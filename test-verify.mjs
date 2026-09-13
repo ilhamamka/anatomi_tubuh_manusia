@@ -19,6 +19,7 @@ for (const id of expectedOrgans) {
   assert.ok(organ.summary.length > 10, `Organ '${id}' must have an informative summary`);
   assert.ok(organ.funFacts.length >= 2, `Organ '${id}' must have at least 2 fun facts`);
   assert.ok(organ.healthTips.length > 5, `Organ '${id}' must have health tips`);
+  assert.ok(organ.story && organ.story.length > 30, `Organ '${id}' must have an engaging kid-friendly story text`);
   
   // Test SVG rendering
   const svg = organ.renderSVG(100, true);

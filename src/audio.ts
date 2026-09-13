@@ -438,6 +438,99 @@ class AudioEngine {
     this.bgmIntervalId = window.setInterval(playStep, 1100);
   }
 
+  private hudElement: HTMLElement | null = null;
+  private keepAliveTimer: number | null = null;
+
+  // Visual Mascot Subtitle & Story HUD Bar (Like Kak Bintang in Ruang Angkasa)
+  private updateHud(isSpeaking: boolean, text: string, speakerTitle: string = 'Dokter Cilik Sedang Bercerita:') {
+    if (typeof document === 'undefined') return;
+
+    if (!this.hudElement) {
+      this.hudElement = document.getElementById('voice-narration-hud');
+      if (!this.hudElement) {
+        this.hudElement = document.createElement('div');
+        this.hudElement.id = 'voice-narration-hud';
+        this.hudElement.className = 'voice-narration-hud';
+        document.body.appendChild(this.hudElement);
+      }
+    }
+
+    if (!isSpeaking || !text) {
+      this.hudElement.classList.remove('active');
+      return;
+    }
+
+    this.hudElement.innerHTML = `
+      <div class="hud-mascot-avatar">
+        <span class="hud-avatar-icon">🩺</span>
+        <div class="hud-soundwaves">
+          <span class="hud-wave-bar"></span>
+          <span class="hud-wave-bar"></span>
+          <span class="hud-wave-bar"></span>
+          <span class="hud-wave-bar"></span>
+        </div>
+      </div>
+      <div class="hud-content">
+        <span class="hud-speaker-label">${speakerTitle}</span>
+        <p class="hud-subtitle-text">"${text}"</p>
+      </div>
+      <div class="hud-actions">
+        <button class="btn-hud-action" id="btn-hud-replay" title="Ulangi Suara Cerita" type="button">🔁</button>
+        <button class="btn-hud-action" id="btn-hud-stop" title="Hentikan Suara Cerita" type="button">⏹️</button>
+      </div>
+    `;
+
+    this.hudElement.classList.add('active');
+
+    const replayBtn = this.hudElement.querySelector('#btn-hud-replay');
+    if (replayBtn) {
+      replayBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.speak(text, undefined, undefined, speakerTitle);
+      });
+    }
+
+    const stopBtn = this.hudElement.querySelector('#btn-hud-stop');
+    if (stopBtn) {
+      stopBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.stopSpeaking();
+      });
+    }
+  }
+
+  // Procedural Xylophone / Kalimba syllable blip sequence
+  // Guarantees audible character speech audio on ANY machine even if TTS voice is not downloaded
+  public playMascotTones(syllablesCount = 8) {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    // Sweet child-friendly pentatonic frequencies: C5, D5, E5, G5, A5, C6
+    const notes = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+    const count = Math.min(Math.max(syllablesCount, 4), 14);
+    const now = this.ctx.currentTime;
+
+    for (let i = 0; i < count; i++) {
+      const noteFreq = notes[i % notes.length];
+      const t = now + i * 0.085;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle'; // warm wooden marimba tone
+      osc.frequency.setValueAtTime(noteFreq, t);
+
+      gain.gain.setValueAtTime(0.09, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.15);
+    }
+  }
+
   public stopBgm() {
     if (this.bgmIntervalId) {
       clearInterval(this.bgmIntervalId);
@@ -451,6 +544,11 @@ class AudioEngine {
         window.speechSynthesis.cancel();
       } catch {}
     }
+    if (this.keepAliveTimer) {
+      clearInterval(this.keepAliveTimer);
+      this.keepAliveTimer = null;
+    }
+    this.updateHud(false, '');
     this.notifySpeaking(false, '');
   }
 
@@ -459,13 +557,51 @@ class AudioEngine {
     this.stopBgm();
   }
 
-  // 12. Text-to-Speech (TTS) Doctor Narration
-  public speak(text: string, onStart?: () => void, onEnd?: () => void) {
-    if (!this.soundEnabled || !text) return;
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  // Specialized Kid-Friendly Story Narration Engine
+  public speakStory(storyText: string, organName: string, onEnd?: () => void) {
+    if (!storyText) return;
+    this.speak(storyText, undefined, onEnd, `Dokter Cilik Bercerita · ${organName}`);
+  }
+
+  // 12. Text-to-Speech (TTS) Doctor Narration + Mascot Tones + Live Subtitle HUD
+  public speak(text: string, onStart?: () => void, onEnd?: () => void, speakerTitle: string = 'Dokter Cilik Sedang Bercerita:') {
+    if (!text) return;
+    // Auto-unmute when explicit speech narration is triggered
+    this.soundEnabled = true;
+    this.initCtx();
+
+    // 1. Play tactile confirmation pop sound
+    this.playPop(520);
+
+    // 2. Immediately play sweet procedural mascot voice melody so audio is 100% audible immediately
+    const words = text.split(/\s+/).length;
+    this.playMascotTones(Math.min(words, 12));
+
+    // 3. Show visual subtitle HUD banner immediately
+    this.updateHud(true, text, speakerTitle);
+    this.notifySpeaking(true, text);
+
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setTimeout(() => {
+        this.updateHud(false, '');
+        this.notifySpeaking(false, '');
+        if (onEnd) onEnd();
+      }, Math.max(text.length * 65, 3000));
+      return;
+    }
 
     try {
-      window.speechSynthesis.cancel();
+      // Force unfreeze Chrome's speech synthesis state machine
+      try {
+        window.speechSynthesis.pause();
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
+      } catch {}
+
+      if (this.keepAliveTimer) {
+        clearInterval(this.keepAliveTimer);
+        this.keepAliveTimer = null;
+      }
 
       // Asynchronous dispatch prevents race condition in Chromium/WebKit engines
       setTimeout(() => {
@@ -478,35 +614,88 @@ class AudioEngine {
           // Retain global reference to prevent garbage collection mid-speech
           (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance }).__activeUtterance = utterance;
 
-          if (this.selectedVoice && (this.currentLanguage === 'id' ? this.selectedVoice.lang.toLowerCase().includes('id') : true)) {
-            utterance.voice = this.selectedVoice;
+          // Find best voice available (prefer Indonesian, but allow natural system voices)
+          const voices = window.speechSynthesis.getVoices();
+          if (voices && voices.length > 0) {
+            const idVoice = voices.find(v => {
+              const n = (v.name || '').toLowerCase();
+              const l = (v.lang || '').toLowerCase().replace(/_/g, '-');
+              return l.startsWith('id') || n.includes('indonesia') || n.includes('damayanti');
+            });
+            if (idVoice) {
+              utterance.voice = idVoice;
+            }
           }
+
           utterance.lang = this.currentLanguage === 'id' ? 'id-ID' : 'en-US';
-          utterance.rate = 0.98;
+          utterance.rate = 0.96;
           utterance.pitch = 1.05;
 
           utterance.onstart = () => {
+            this.updateHud(true, text, speakerTitle);
             this.notifySpeaking(true, text);
             if (onStart) onStart();
+
+            // Setup keepAlive timer to bypass Chrome 15-second audio pause bug
+            this.keepAliveTimer = window.setInterval(() => {
+              if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.pause();
+                window.speechSynthesis.resume();
+              } else if (this.keepAliveTimer) {
+                clearInterval(this.keepAliveTimer);
+                this.keepAliveTimer = null;
+              }
+            }, 8000);
           };
 
           utterance.onend = () => {
+            if (this.keepAliveTimer) {
+              clearInterval(this.keepAliveTimer);
+              this.keepAliveTimer = null;
+            }
+            this.updateHud(false, '');
             this.notifySpeaking(false, '');
             if (onEnd) onEnd();
           };
 
           utterance.onerror = () => {
+            if (this.keepAliveTimer) {
+              clearInterval(this.keepAliveTimer);
+              this.keepAliveTimer = null;
+            }
+            // If custom Indonesian voice threw an error, retry with default voice once
+            if (utterance.voice) {
+              try {
+                const fallback = new SpeechSynthesisUtterance(text);
+                (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance }).__activeUtterance = fallback;
+                fallback.lang = this.currentLanguage === 'id' ? 'id-ID' : 'en-US';
+                fallback.rate = 0.96;
+                fallback.pitch = 1.05;
+                fallback.onend = () => {
+                  this.updateHud(false, '');
+                  this.notifySpeaking(false, '');
+                  if (onEnd) onEnd();
+                };
+                window.speechSynthesis.speak(fallback);
+                return;
+              } catch {}
+            }
+            this.updateHud(false, '');
             this.notifySpeaking(false, '');
             if (onEnd) onEnd();
           };
 
           window.speechSynthesis.speak(utterance);
         } catch {
+          this.updateHud(false, '');
           this.notifySpeaking(false, '');
+          if (onEnd) onEnd();
         }
-      }, 40);
+      }, 50);
     } catch {
+      this.updateHud(false, '');
       this.notifySpeaking(false, '');
+      if (onEnd) onEnd();
     }
   }
 }

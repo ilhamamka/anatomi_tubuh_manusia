@@ -196,8 +196,8 @@ export class OrganAssemblyGame {
                             🔍 Inspeksi Detail & Fakta
                           </button>
                         `}
-                        <button class="btn-listen-mini" data-action-voice="${id}" type="button" title="Dengarkan Suara Penjelasan">
-                          🔊 Dengar
+                        <button class="btn-listen-mini" data-action-voice="${id}" type="button" title="Dengarkan Cerita Ceria Organ">
+                          📖 Cerita
                         </button>
                       </div>
                     </div>
@@ -220,7 +220,7 @@ export class OrganAssemblyGame {
               </div>
               <div class="drawer-actions">
                 <button id="btn-drawer-speak" class="btn-neo-accent btn-sm" type="button">
-                  🔊 Dengarkan Suara Dokter
+                  📖 Dengarkan Cerita Dokter Cilik
                 </button>
                 <button id="btn-close-drawer" class="btn-neo-secondary btn-sm" type="button">Tutup</button>
               </div>
@@ -272,7 +272,7 @@ export class OrganAssemblyGame {
           const organ = ORGANS[id];
           if (organ) {
             this.playOrganSound(organ);
-            sound.speak(`Organ ${organ.name}. Nama Latin: ${organ.latinName}. ${organ.summary}. ${organ.description}`);
+            sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`);
           }
           return;
         }
@@ -339,7 +339,7 @@ export class OrganAssemblyGame {
       if (!this.activeInspectedOrgan) return;
       const o = this.activeInspectedOrgan;
       this.playOrganSound(o);
-      sound.speak(`Organ ${o.name}. Nama Latin: ${o.latinName}. ${o.summary}. ${o.description}. Fakta penting: ${o.funFacts[0]}. Saran sehat dokter: ${o.healthTips}`);
+      sound.speakStory(o.story, `${o.name} (${o.funTitle})`);
     });
   }
 

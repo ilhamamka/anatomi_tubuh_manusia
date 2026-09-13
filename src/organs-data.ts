@@ -13,6 +13,7 @@ export interface OrganInfo {
   secondaryColor: string;
   summary: string;
   description: string;
+  story: string;
   funFacts: string[];
   healthTips: string;
   soundType: 'heartbeat' | 'breath' | 'neural' | 'digestive' | 'bone_snap' | 'xray_scan' | 'pop';
@@ -56,6 +57,7 @@ export interface ClinicalCase {
 export const ORGANS: Record<string, OrganInfo> = {
   brain: {
     id: 'brain',
+    story: 'Halo Dokter Cilik! Aku adalah Otak si Markas Komando Tubuh. Aku bekerja siang dan malam mengendalikan semua gerakanmu, pikiran cerdasmu, hingga mimpi indahmu saat tidur. Aku punya 86 miliar neuron yang saling berkomunikasi menggunakan sinyal listrik kilat! Yuk jaga aku dengan tidur cukup delapan jam dan gemar membaca buku!',
     name: 'Otak',
     latinName: 'Cerebrum & Encephalon',
     system: 'saraf',
@@ -103,6 +105,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   heart: {
     id: 'heart',
+    story: 'Halo Dokter Cilik! Aku adalah Jantung si Pompa Ajaib! Ukuranku hanya sebesar kepalan tanganmu, tapi aku adalah pekerja paling setia. Setiap hari aku berdenyut sekitar 100.000 kali tanpa pernah beristirahat sedetik pun, memompa darah segar beroksigen ke seluruh tubuhmu! Yuk rajin olahraga dan makan buah agar aku selalu sehat!',
     name: 'Jantung',
     latinName: 'Cor',
     system: 'sirkulasi',
@@ -153,6 +156,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   lungs: {
     id: 'lungs',
+    story: 'Halo Dokter Cilik! Kami adalah Paru-Paru si Peniup Oksigen. Setiap kali kamu menarik napas, jutaan kantung alveolus kami menyerap oksigen segar dari udara untuk dialirkan ke darahmu, lalu membuang karbondioksida saat kamu menghembuskan napas. Segar sekali rasanya menghirup udara bersih di pagi hari!',
     name: 'Paru-Paru',
     latinName: 'Pulmo',
     system: 'pernapasan',
@@ -203,6 +207,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   stomach: {
     id: 'stomach',
+    story: 'Halo Dokter Cilik! Aku adalah Lambung si Pengolah Makanan. Bentukku seperti kantong berotot yang sangat kuat. Saat makanan masuk, aku melumatnya dengan asam lambung dan enzim pencernaan menjadi bubur halus yang siap diserap tubuh. Jangan lupa kunyah makananmu pelan-pelan ya!',
     name: 'Lambung',
     latinName: 'Gaster / Ventriculus',
     system: 'pencernaan',
@@ -249,6 +254,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   liver: {
     id: 'liver',
+    story: 'Halo Dokter Cilik! Aku adalah Hati si Pabrik Pembersih Tubuh. Aku adalah organ dalam terbesarmu! Aku bertugas menyaring racun dari makanan, memproduksi cairan empedu untuk mencerna lemak, dan menyimpan cadangan energi saat kamu bermain gembira. Jagalah aku dengan rajin minum air putih ya!',
     name: 'Hati & Empedu',
     latinName: 'Hepar',
     system: 'pencernaan',
@@ -294,6 +300,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   intestines: {
     id: 'intestines',
+    story: 'Halo Dokter Cilik! Kami adalah Usus si Jalur Penyerapan Nutrisi. Usus halus kami yang panjang menyerap sari-sari vitamin dan mineral dari makananmu, lalu usus besar kami menyerap air dan memadatkan sisa makanan. Makan sayuran hijau berserat tinggi ya, agar pencernaanmu selalu lancar!',
     name: 'Usus Halus & Besar',
     latinName: 'Intestinum Tenue & Crassum',
     system: 'pencernaan',
@@ -337,6 +344,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   kidneys: {
     id: 'kidneys',
+    story: 'Halo Dokter Cilik! Kami adalah Ginjal si Sepasang Penyaring Hebat. Bentuk kami seperti dua butir kacang merah di pinggang belakangmu. Setiap jam, kami menyaring darah berkali-kali untuk membuang zat sisa menjadi air seni yang jernih. Ingat, jangan tahan buang air kecil dan rajin minum air putih!',
     name: 'Ginjal',
     latinName: 'Ren',
     system: 'ekskresi',
@@ -385,6 +393,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   skeleton: {
     id: 'skeleton',
+    story: 'Halo Dokter Cilik! Aku adalah Rangka Tulang si Benteng Pelindung Tubuh. Tanpa 206 tulang kuat di dalam dirimu, tubuhmu akan lemas seperti agar-agar jeli! Aku melindungi organ lembut seperti otak dan jantungmu, serta membantumu berdiri tegap, berlari kencang, dan melompat tinggi!',
     name: 'Rangka Tulang',
     latinName: 'Systema Skeletale',
     system: 'gerak',
@@ -431,6 +440,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   blood_cells: {
     id: 'blood_cells',
+    story: 'Halo Dokter Cilik! Kami adalah Sel Darah si Pasukan Pengantar Ajaib. Sel darah merah membawa oksigen merah merona, sel darah putih adalah prajurit pembasmi kuman penyakit, dan keping darah sigap menutup luka saat kamu tergores. Kami berpatroli menjelajahi seluruh tubuhmu setiap detik!',
     name: 'Sel Darah & Imun',
     latinName: 'Sanguis & Systema Immunitatis',
     system: 'sirkulasi',
@@ -480,6 +490,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   senses_eye: {
     id: 'senses_eye',
+    story: 'Halo Dokter Cilik! Kami adalah Mata si Jendela Dunia. Lensa jernih kami menangkap keindahan warna pelangi, buku cerita bergambar, dan senyum manis orang tuamu, lalu mengirimkan gambarnya ke otak dalam sekejap mata. Istirahatkan mata dari layar dan nikmati pemandangan hijau ya!',
     name: 'Mata (Penglihatan)',
     latinName: 'Oculus',
     system: 'indera',
@@ -524,6 +535,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   senses_ear: {
     id: 'senses_ear',
+    story: 'Halo Dokter Cilik! Kami adalah Telinga si Penangkap Gelombang Suara. Gendang telinga dan tulang-tulang kecil kami bergetar riang saat mendengar musik merdu, suara tawa ceria teman-temanmu, dan kicau burung di alam. Jaga kebersihan telinga dan hindari suara bising yang terlalu keras ya!',
     name: 'Telinga (Pendengaran)',
     latinName: 'Auris',
     system: 'indera',
@@ -564,6 +576,7 @@ export const ORGANS: Record<string, OrganInfo> = {
 
   senses_skin: {
     id: 'senses_skin',
+    story: 'Halo Dokter Cilik! Aku adalah Kulit si Jubah Pelindung Terluar. Aku adalah organ tubuh terluas yang menyelimuti dirimu dari ujung kepala hingga jemari kaki! Aku melindungimu dari kuman, mengatur suhu tubuhmu saat gerah atau dingin, dan membantumu merasakan pelukan hangat yang lembut.',
     name: 'Kulit (Peraba & Pelindung)',
     latinName: 'Cutis & Integumentum',
     system: 'indera',

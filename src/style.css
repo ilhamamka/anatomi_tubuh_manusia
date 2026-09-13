@@ -2558,15 +2558,165 @@ main {
   color: #ffffff;
   border: 2px solid var(--ink-line);
   border-radius: var(--radius-pill);
-  padding: 8px 14px;
-  font-size: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .btn-card-narrate:hover {
   background: #0369a1;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Voice Narration Subtitle & Story HUD Bar (Like Kak Bintang in Ruang Angkasa) */
+.voice-narration-hud {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(140%);
+  z-index: 99999;
+  max-width: 860px;
+  width: calc(100% - 32px);
+  background: #ffffff;
+  border: 3px solid var(--ink-line);
+  border-radius: var(--radius-lg);
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 16px 36px rgba(47, 42, 38, 0.25), 4px 4px 0 var(--ink-line);
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.voice-narration-hud.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hud-mascot-avatar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: #f0fdf4;
+  border: 2px solid var(--ink-line);
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0 var(--ink-line);
+}
+
+.hud-avatar-icon {
+  font-size: 26px;
+  animation: mascotBounce 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes mascotBounce {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-3px) scale(1.08); }
+}
+
+.hud-soundwaves {
+  position: absolute;
+  bottom: -4px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 14px;
+}
+
+.hud-wave-bar {
+  width: 3px;
+  height: 6px;
+  background: #0284c7;
+  border-radius: 2px;
+  animation: wavePulse 0.6s ease-in-out infinite alternate;
+}
+
+.hud-wave-bar:nth-child(2) {
+  animation-delay: 0.15s;
+  background: #16a34a;
+}
+.hud-wave-bar:nth-child(3) {
+  animation-delay: 0.3s;
+  background: #f59e0b;
+}
+.hud-wave-bar:nth-child(4) {
+  animation-delay: 0.45s;
+  background: #e11d48;
+}
+
+@keyframes wavePulse {
+  0% { height: 4px; }
+  100% { height: 16px; }
+}
+
+.hud-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hud-speaker-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 900;
+  color: #0284c7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.hud-subtitle-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-line);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-hud-action {
+  background: #f8fafc;
+  border: 2px solid var(--ink-line);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 1.5px 1.5px 0 var(--ink-line);
+  transition: all 0.15s ease;
+}
+
+.btn-hud-action:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  box-shadow: 2.5px 2.5px 0 var(--ink-line);
+}
+
+.btn-hud-action:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
 }
