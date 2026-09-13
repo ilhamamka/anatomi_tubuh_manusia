@@ -30,6 +30,10 @@ export class OrganAssemblyGame {
     this.render();
   }
 
+  public destroy() {
+    sound.stopSpeaking();
+  }
+
   private render() {
     this.container.innerHTML = `
       <div class="assembly-game-wrapper">
@@ -286,7 +290,7 @@ export class OrganAssemblyGame {
     this.playOrganSound(organ);
 
     // Friendly TTS speech
-    sound.speak(`Hebat! Kamu berhasil memasang ${organ.name} dengan tepat!`);
+    sound.speak(`Hebat! Kamu berhasil memasang ${organ.name} dengan tepat! ${organ.summary}`);
 
     // Show fact drawer
     this.showOrganFactDrawer(organ);
@@ -376,7 +380,7 @@ export class OrganAssemblyGame {
     if (listenBtn) {
       listenBtn.addEventListener('click', () => {
         this.playOrganSound(organ);
-        sound.speak(`${organ.name}. ${organ.summary}`);
+        sound.speak(`Organ ${organ.name}. Nama ilmiah: ${organ.latinName}. ${organ.summary}. ${organ.description}. Fakta menarik: ${organ.funFacts[0]}. Saran sehat: ${organ.healthTips}`);
       });
     }
   }

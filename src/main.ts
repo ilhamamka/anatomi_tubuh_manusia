@@ -202,6 +202,25 @@ class App {
   }
 
   public switchScreen(screenId: string) {
+    // Clean up ongoing loops, speech, and component states
+    sound.stopSpeaking();
+
+    if (screenId !== 'screen-scanner') {
+      this.scannerGame?.destroy();
+    }
+    if (screenId !== 'screen-sandbox') {
+      this.sandboxManager?.destroy();
+    }
+    if (screenId !== 'screen-assembly') {
+      this.assemblyGame?.destroy();
+    }
+    if (screenId !== 'screen-clinic') {
+      this.clinicGame?.destroy();
+    }
+    if (screenId !== 'screen-chart') {
+      this.chartManager?.destroy();
+    }
+
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(screenId);
     if (target) {

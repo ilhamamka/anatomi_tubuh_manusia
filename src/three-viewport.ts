@@ -416,6 +416,27 @@ export class ThreeAnatomyViewport {
     this.cuttingPlaneMesh.visible = show;
   }
 
+  public highlightOrgan(organId: string) {
+    if (organId === 'brain') {
+      this.targetRotX = 0.12;
+      this.targetRotY = 0;
+      this.currentZoom = 4.8;
+    } else if (organId === 'heart' || organId === 'lungs') {
+      this.targetRotX = 0;
+      this.targetRotY = 0;
+      this.currentZoom = 5.0;
+    } else if (organId === 'stomach' || organId === 'liver' || organId === 'kidneys' || organId === 'intestines') {
+      this.targetRotX = -0.15;
+      this.targetRotY = 0;
+      this.currentZoom = 5.0;
+    } else if (organId === 'skeleton') {
+      this.targetRotX = 0;
+      this.targetRotY = Math.PI * 0.25;
+      this.currentZoom = 5.5;
+    }
+    this.camera.position.set(0, 0, this.currentZoom);
+  }
+
   public resetView() {
     this.targetRotX = 0;
     this.targetRotY = 0;

@@ -8,6 +8,10 @@ class AudioEngine {
   private bgmIntervalId: number | null = null;
   private currentLanguage: 'id' | 'en' = 'id';
   private selectedVoice: SpeechSynthesisVoice | null = null;
+  private isSpeakingState: boolean = false;
+  private currentSpokenText: string = '';
+  private autoNarrationEnabled: boolean = true;
+  private speakingListeners: Set<(isSpeaking: boolean, text: string) => void> = new Set();
 
   constructor() {
     this.initVoices();
@@ -28,16 +32,53 @@ class AudioEngine {
   private initVoices() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       const load = () => {
-        const voices = window.speechSynthesis.getVoices();
-        const idVoice = voices.find(v => v.lang.startsWith('id') || v.lang.includes('ID'));
-        const fallbackVoice = voices.find(v => v.lang.startsWith('en')) || voices[0] || null;
-        this.selectedVoice = idVoice || fallbackVoice;
+        try {
+          const voices = window.speechSynthesis.getVoices();
+          if (!voices || voices.length === 0) return;
+          const idVoice = voices.find(v => {
+            const l = (v.lang || '').toLowerCase();
+            const n = (v.name || '').toLowerCase();
+            return l.startsWith('id') || l.includes('id-') || l.includes('_id') || n.includes('indonesia') || n.includes('damayanti');
+          });
+          // Do NOT set selectedVoice to an incompatible English voice when in Indonesian mode
+          this.selectedVoice = idVoice || null;
+        } catch {}
       };
       load();
       if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = load;
       }
     }
+  }
+
+  public onSpeakingChange(cb: (isSpeaking: boolean, text: string) => void): () => void {
+    this.speakingListeners.add(cb);
+    return () => this.speakingListeners.delete(cb);
+  }
+
+  private notifySpeaking(isSpeaking: boolean, text: string = '') {
+    this.isSpeakingState = isSpeaking;
+    this.currentSpokenText = text;
+    this.speakingListeners.forEach(cb => {
+      try { cb(isSpeaking, text); } catch {}
+    });
+  }
+
+  public isSpeaking(): boolean {
+    return this.isSpeakingState;
+  }
+
+  public getSpokenText(): string {
+    return this.currentSpokenText;
+  }
+
+  public toggleAutoNarration(): boolean {
+    this.autoNarrationEnabled = !this.autoNarrationEnabled;
+    return this.autoNarrationEnabled;
+  }
+
+  public isAutoNarrationEnabled(): boolean {
+    return this.autoNarrationEnabled;
   }
 
   public toggleSound(): boolean {
@@ -397,30 +438,75 @@ class AudioEngine {
     this.bgmIntervalId = window.setInterval(playStep, 1100);
   }
 
-  private stopBgm() {
+  public stopBgm() {
     if (this.bgmIntervalId) {
       clearInterval(this.bgmIntervalId);
       this.bgmIntervalId = null;
     }
   }
 
+  public stopSpeaking() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
+    }
+    this.notifySpeaking(false, '');
+  }
+
+  public stopAll() {
+    this.stopSpeaking();
+    this.stopBgm();
+  }
+
   // 12. Text-to-Speech (TTS) Doctor Narration
-  public speak(text: string) {
-    if (!this.soundEnabled) return;
+  public speak(text: string, onStart?: () => void, onEnd?: () => void) {
+    if (!this.soundEnabled || !text) return;
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
 
     try {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      if (this.selectedVoice) {
-        utterance.voice = this.selectedVoice;
-      }
-      utterance.lang = this.currentLanguage === 'id' ? 'id-ID' : 'en-US';
-      utterance.rate = 1.0;
-      utterance.pitch = 1.1; // Friendly warm educator pitch
-      window.speechSynthesis.speak(utterance);
+
+      // Asynchronous dispatch prevents race condition in Chromium/WebKit engines
+      setTimeout(() => {
+        try {
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+          }
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          // Retain global reference to prevent garbage collection mid-speech
+          (window as unknown as { __activeUtterance?: SpeechSynthesisUtterance }).__activeUtterance = utterance;
+
+          if (this.selectedVoice && (this.currentLanguage === 'id' ? this.selectedVoice.lang.toLowerCase().includes('id') : true)) {
+            utterance.voice = this.selectedVoice;
+          }
+          utterance.lang = this.currentLanguage === 'id' ? 'id-ID' : 'en-US';
+          utterance.rate = 0.98;
+          utterance.pitch = 1.05;
+
+          utterance.onstart = () => {
+            this.notifySpeaking(true, text);
+            if (onStart) onStart();
+          };
+
+          utterance.onend = () => {
+            this.notifySpeaking(false, '');
+            if (onEnd) onEnd();
+          };
+
+          utterance.onerror = () => {
+            this.notifySpeaking(false, '');
+            if (onEnd) onEnd();
+          };
+
+          window.speechSynthesis.speak(utterance);
+        } catch {
+          this.notifySpeaking(false, '');
+        }
+      }, 40);
     } catch {
-      // Graceful fallback if speech synthesis is restricted
+      this.notifySpeaking(false, '');
     }
   }
 }

@@ -29,6 +29,10 @@ export class ClinicGame {
     this.loadCase(0);
   }
 
+  public destroy() {
+    sound.stopSpeaking();
+  }
+
   private loadCase(index: number) {
     this.currentCaseIndex = index % CLINICAL_CASES.length;
     this.examined = false;
@@ -76,7 +80,12 @@ export class ClinicGame {
             </div>
 
             <div class="patient-story-box">
-              <h4 class="complaint-title">🗣️ Keluhan Pasien:</h4>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <h4 class="complaint-title">🗣️ Keluhan Pasien:</h4>
+                <button id="btn-replay-complaint" class="btn-neo-secondary btn-xs" type="button" style="display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:3px 8px;">
+                  🔊 Dengarkan Suara
+                </button>
+              </div>
               <p class="complaint-text">"${c.chiefComplaint}"</p>
               <p class="story-text">${c.story}</p>
             </div>
@@ -171,6 +180,13 @@ export class ClinicGame {
     }
 
     const c = CLINICAL_CASES[this.currentCaseIndex];
+
+    const replayBtn = this.container.querySelector('#btn-replay-complaint');
+    if (replayBtn) {
+      replayBtn.addEventListener('click', () => {
+        sound.speak(`Pasien ${c.patientName} mengeluhkan: ${c.chiefComplaint}. Cerita pasien: ${c.story}`);
+      });
+    }
 
     // Tool examination buttons
     const toolBtns = this.container.querySelectorAll('[data-tool]');

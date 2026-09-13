@@ -1912,3 +1912,243 @@ main {
   border-radius: var(--radius-pill);
 }
 
+/* Speech Narration HUD & Equalizer */
+.speech-hud-bar {
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid rgba(0, 240, 255, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: 0 4px 18px rgba(0, 240, 255, 0.12);
+  transition: all 0.3s ease;
+}
+
+.speech-hud-bar.is-speaking {
+  border-color: #00f0ff;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.35);
+  background: rgba(7, 11, 20, 0.98);
+}
+
+.speech-hud-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.speech-wave-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.speech-wave-bars span {
+  width: 4px;
+  height: 6px;
+  background: #00f0ff;
+  border-radius: 2px;
+  transition: height 0.2s ease;
+}
+
+.speech-hud-bar.is-speaking .speech-wave-bars span:nth-child(1) {
+  animation: waveBar 0.6s infinite ease-in-out alternate;
+}
+.speech-hud-bar.is-speaking .speech-wave-bars span:nth-child(2) {
+  animation: waveBar 0.8s infinite ease-in-out alternate 0.1s;
+}
+.speech-hud-bar.is-speaking .speech-wave-bars span:nth-child(3) {
+  animation: waveBar 0.5s infinite ease-in-out alternate 0.2s;
+}
+.speech-hud-bar.is-speaking .speech-wave-bars span:nth-child(4) {
+  animation: waveBar 0.7s infinite ease-in-out alternate 0.15s;
+}
+.speech-hud-bar.is-speaking .speech-wave-bars span:nth-child(5) {
+  animation: waveBar 0.9s infinite ease-in-out alternate 0.25s;
+}
+
+@keyframes waveBar {
+  0% { height: 4px; opacity: 0.5; }
+  100% { height: 22px; opacity: 1; filter: drop-shadow(0 0 4px #00f0ff); }
+}
+
+.speech-hud-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.speech-hud-title {
+  font-size: 11px;
+  font-weight: 900;
+  color: #00f0ff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.speech-hud-quote {
+  font-size: 13px;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.speech-hud-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+}
+
+/* Hero Voice Button in Spotlight Panel */
+.spotlight-voice-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.btn-voice-hero {
+  width: 100%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 2px solid #00f0ff;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-voice-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.4);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.btn-voice-hero.speaking-pulse {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  border-color: #f43f5e;
+  animation: voicePulse 1.2s infinite alternate;
+}
+
+@keyframes voicePulse {
+  0% { box-shadow: 0 0 10px rgba(244, 63, 94, 0.4); transform: scale(1); }
+  100% { box-shadow: 0 0 24px rgba(244, 63, 94, 0.8); transform: scale(1.02); }
+}
+
+.btn-acoustic-listen {
+  width: 100%;
+  background: #0f172a;
+  color: #38bdf8;
+  border: 2px solid #334155;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-acoustic-listen:hover {
+  background: #1e293b;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.active-autovoice {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Organ Quick Selector Strip */
+.organ-quick-selector-strip {
+  background: #0f172a;
+  border: 2px solid #1e293b;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 14px;
+}
+
+.strip-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.strip-items-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.strip-items-scroll::-webkit-scrollbar {
+  height: 5px;
+}
+.strip-items-scroll::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+}
+
+.strip-organ-btn {
+  background: #1e293b;
+  color: #f1f5f9;
+  border: 1.5px solid #334155;
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.strip-organ-btn:hover {
+  background: #334155;
+  border-color: #00f0ff;
+  color: #00f0ff;
+}
+
+.strip-organ-btn.active {
+  background: #00f0ff;
+  color: #070b14;
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+}
+
+.strip-check {
+  background: #10b981;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 10px;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+

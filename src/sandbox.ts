@@ -127,10 +127,12 @@ export class SandboxManager {
   }
 
   public destroy() {
+    this.isBeating = false;
     if (this.bpmTimer) {
       clearInterval(this.bpmTimer);
       this.bpmTimer = null;
     }
+    sound.stopSpeaking();
   }
 
   private startHeartbeatLoop() {
@@ -150,6 +152,8 @@ export class SandboxManager {
         const id = btn.getAttribute('data-sandbox-organ');
         if (!id) return;
         sound.playPop();
+        sound.stopSpeaking();
+        this.destroy();
         this.currentOrganId = id;
         this.render();
       });
@@ -159,9 +163,11 @@ export class SandboxManager {
     if (bpmSlider) {
       bpmSlider.addEventListener('input', () => {
         this.bpm = parseInt(bpmSlider.value, 10);
-        const valLabel = this.container.querySelector('#sandbox-bpm-val');
-        if (valLabel) valLabel.textContent = `${this.bpm} BPM`;
-        this.startHeartbeatLoop();
+        const bpmVal = this.container.querySelector('#sandbox-bpm-val');
+        if (bpmVal) bpmVal.textContent = `${this.bpm} BPM`;
+        if (this.isBeating && this.currentOrganId === 'heart') {
+          this.startHeartbeatLoop();
+        }
       });
     }
 
@@ -188,7 +194,7 @@ export class SandboxManager {
     if (voiceBtn) {
       voiceBtn.addEventListener('click', () => {
         const organ = ORGANS[this.currentOrganId];
-        sound.speak(`${organ.name}. ${organ.summary}`);
+        sound.speak(`Organ ${organ.name}. Nama Latin: ${organ.latinName}. ${organ.summary}. ${organ.description}. Fakta penting: ${organ.funFacts[0]}. Saran dokter: ${organ.healthTips}`);
       });
     }
 

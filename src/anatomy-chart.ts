@@ -107,6 +107,10 @@ export class AnatomyChartManager {
                   <strong>🥗 Rekomendasi Kesehatan:</strong>
                   <p>${organ.healthTips}</p>
                 </div>
+
+                <button class="btn-neo-accent btn-sm w-full btn-card-narrate" data-sound-organ="${organ.id}" type="button" style="width:100%; margin-top:12px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                  🔊 Dengarkan Penjelasan Suara Dokter
+                </button>
               </div>
             </div>
           `).join('')}
@@ -117,12 +121,17 @@ export class AnatomyChartManager {
     this.bindEvents();
   }
 
+  public destroy() {
+    sound.stopSpeaking();
+  }
+
   private bindEvents() {
     const tabs = this.container.querySelectorAll('.filter-pill');
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const filter = tab.getAttribute('data-filter') || 'all';
         sound.playPop();
+        sound.stopSpeaking();
         this.render(filter);
       });
     });
@@ -137,7 +146,7 @@ export class AnatomyChartManager {
         if (!organ) return;
 
         this.playOrganAcoustic(organ);
-        sound.speak(`${organ.name}. ${organ.latinName}. ${organ.summary}`);
+        sound.speak(`Organ ${organ.name}. Nama Latin: ${organ.latinName}. ${organ.summary}. ${organ.description}. Fakta penting: ${organ.funFacts[0]}. Saran dokter: ${organ.healthTips}`);
       });
     });
   }

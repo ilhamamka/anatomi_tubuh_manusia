@@ -1,5 +1,5 @@
 // Pemindai Tubuh Multi-Layer & Stasiun Bedah 3D Interaktif (WebGL Three.js)
-// 3D Holographic Orbit, Real-Time Dissection Explode, CT-Scan Slicing & Clinical Telemetry
+// 3D Holographic Orbit, Real-Time Dissection Explode, CT-Scan Slicing, Telemetri Medis, & Voice Narration Engine
 
 import { ORGANS, type OrganInfo } from './organs-data';
 import { sound } from './audio';
@@ -23,6 +23,7 @@ export class BodyScannerGame {
   private inspectedOrgans: Set<string> = new Set();
   private bpmIntervalId: number | null = null;
   private threeViewport: ThreeAnatomyViewport | null = null;
+  private unbindSpeakingListener: (() => void) | null = null;
 
   constructor(container: HTMLElement, callbacks: ScannerCallbacks) {
     this.container = container;
@@ -30,17 +31,34 @@ export class BodyScannerGame {
   }
 
   public start() {
+    this.destroy();
     this.inspectedOrgans.clear();
     this.currentLayer = '3d_viewport';
     this.activeOrganId = 'heart';
     this.render();
     this.startHeartbeatLoop();
+
+    // Bind real-time speech synthesis state updates to HUD
+    this.unbindSpeakingListener = sound.onSpeakingChange((isSpeaking, text) => {
+      this.updateSpeechHud(isSpeaking, text);
+      this.updateVoiceButtonState(isSpeaking);
+    });
+
+    // Auto-narrate initial heart organ after user enters
+    if (sound.isAutoNarrationEnabled()) {
+      setTimeout(() => {
+        const organ = ORGANS['heart'];
+        this.narrateOrgan(organ);
+      }, 550);
+    }
   }
 
   public destroy() {
-    if (this.bpmIntervalId) {
-      clearInterval(this.bpmIntervalId);
-      this.bpmIntervalId = null;
+    this.stopHeartbeatLoop();
+    sound.stopSpeaking();
+    if (this.unbindSpeakingListener) {
+      this.unbindSpeakingListener();
+      this.unbindSpeakingListener = null;
     }
     if (this.threeViewport) {
       this.threeViewport.destroy();
@@ -48,8 +66,18 @@ export class BodyScannerGame {
     }
   }
 
+  private stopHeartbeatLoop() {
+    if (this.bpmIntervalId) {
+      clearInterval(this.bpmIntervalId);
+      this.bpmIntervalId = null;
+    }
+  }
+
   private startHeartbeatLoop() {
-    if (this.bpmIntervalId) clearInterval(this.bpmIntervalId);
+    this.stopHeartbeatLoop();
+    // Heartbeat ONLY plays when inspecting the heart organ!
+    if (this.activeOrganId !== 'heart') return;
+
     const intervalMs = (60 / this.currentBpm) * 1000;
     this.bpmIntervalId = window.setInterval(() => {
       if (this.activeOrganId === 'heart') {
@@ -59,8 +87,68 @@ export class BodyScannerGame {
           ecg.classList.add('pulse-spike');
           setTimeout(() => ecg.classList.remove('pulse-spike'), 180);
         }
+      } else {
+        this.stopHeartbeatLoop();
       }
     }, intervalMs);
+  }
+
+  private narrateOrgan(organ: OrganInfo) {
+    sound.stopSpeaking();
+    const narrationText = `Organ ${organ.name}. Nama ilmiah Latin: ${organ.latinName}. ${organ.summary}. ${organ.description}. Fakta medis penting: ${organ.funFacts[0]}. Saran dokter: ${organ.healthTips}`;
+    sound.speak(narrationText);
+  }
+
+  private updateSpeechHud(isSpeaking: boolean, text: string) {
+    const hudBar = this.container.querySelector('#speech-hud-bar');
+    if (!hudBar) return;
+
+    if (isSpeaking) {
+      hudBar.classList.add('is-speaking');
+    } else {
+      hudBar.classList.remove('is-speaking');
+    }
+
+    const titleEl = hudBar.querySelector('.speech-hud-title');
+    if (titleEl) {
+      titleEl.textContent = isSpeaking ? '🔊 Dokter Cilik Sedang Menjelaskan:' : '💡 Panduan Suara Medis:';
+    }
+
+    const quoteEl = hudBar.querySelector('.speech-hud-quote');
+    if (quoteEl) {
+      const activeOrgan = ORGANS[this.activeOrganId] || ORGANS['heart'];
+      quoteEl.textContent = isSpeaking && text ? `"${text}"` : `Tekan tombol "Dengarkan Penjelasan Suara" untuk memutar narasi ${activeOrgan.name}.`;
+    }
+
+    const actionsEl = hudBar.querySelector('.speech-hud-actions');
+    if (actionsEl) {
+      actionsEl.innerHTML = isSpeaking ? `
+        <button id="btn-hud-stop-speech" class="btn-neo-danger btn-xs" type="button">⏹️ Hentikan Suara</button>
+      ` : `
+        <button id="btn-hud-play-speech" class="btn-neo-accent btn-xs" type="button">🔊 Dengarkan Sekarang</button>
+      `;
+
+      actionsEl.querySelector('#btn-hud-stop-speech')?.addEventListener('click', () => {
+        sound.stopSpeaking();
+      });
+      actionsEl.querySelector('#btn-hud-play-speech')?.addEventListener('click', () => {
+        const activeOrgan = ORGANS[this.activeOrganId] || ORGANS['heart'];
+        this.narrateOrgan(activeOrgan);
+      });
+    }
+  }
+
+  private updateVoiceButtonState(isSpeaking: boolean) {
+    const btn = this.container.querySelector('#btn-voice-explain') as HTMLButtonElement | null;
+    if (!btn) return;
+    const activeOrgan = ORGANS[this.activeOrganId] || ORGANS['heart'];
+    if (isSpeaking) {
+      btn.classList.add('speaking-pulse');
+      btn.innerHTML = '⏹️ HENTIKAN PENJELASAN SUARA DOKTER';
+    } else {
+      btn.classList.remove('speaking-pulse');
+      btn.innerHTML = `🔊 DENGARKAN PENJELASAN SUARA: ${activeOrgan.name.toUpperCase()}`;
+    }
   }
 
   private render() {
@@ -68,6 +156,7 @@ export class BodyScannerGame {
 
     this.container.innerHTML = `
       <div class="scanner-game-wrapper dark-medical-theme">
+        <!-- Workstation Header -->
         <div class="scanner-header">
           <div class="scanner-title-box">
             <div class="medical-tag-row">
@@ -75,11 +164,34 @@ export class BodyScannerGame {
               <span class="medical-fps-badge">60 FPS WEBGL</span>
             </div>
             <h2 class="scanner-title">🔬 Pemindai Anatomi 3D & Stetoskop Telemetri</h2>
-            <p class="scanner-subtitle">Putar 360°, geser slider bedah organ, lakukan irisan CT-Scan, dan dengarkan ritme akustik organ tubuh manusia.</p>
+            <p class="scanner-subtitle">Putar 360°, geser slider bedah organ, lakukan irisan CT-Scan, dan dengarkan suara penjelasan ilmiah dokter.</p>
           </div>
           <div class="scanner-status-capsule">
+            <button id="btn-toggle-autovoice" class="btn-neo-secondary btn-sm ${sound.isAutoNarrationEnabled() ? 'active-autovoice' : ''}" type="button">
+              🎙️ Auto-Suara: <strong>${sound.isAutoNarrationEnabled() ? 'AKTIF (Otomatis Bicara)' : 'MATI'}</strong>
+            </button>
             <span class="inspected-badge">Diperiksa: ${this.inspectedOrgans.size} / ${Object.keys(ORGANS).length}</span>
             <button id="btn-scanner-exit" class="btn-neo-secondary btn-sm" type="button">Kembali ke Beranda</button>
+          </div>
+        </div>
+
+        <!-- Real-time Live Speech Equalizer HUD -->
+        <div class="speech-hud-bar ${sound.isSpeaking() ? 'is-speaking' : ''}" id="speech-hud-bar">
+          <div class="speech-hud-left">
+            <div class="speech-wave-bars">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="speech-hud-info">
+              <span class="speech-hud-title">${sound.isSpeaking() ? '🔊 Dokter Cilik Sedang Menjelaskan:' : '💡 Panduan Suara Medis:'}</span>
+              <span class="speech-hud-quote">${sound.isSpeaking() ? sound.getSpokenText() : `Pilih organ mana saja untuk mendengarkan penjelasan suara bahasa Indonesia.`}</span>
+            </div>
+          </div>
+          <div class="speech-hud-actions">
+            ${sound.isSpeaking() ? `
+              <button id="btn-hud-stop-speech" class="btn-neo-danger btn-xs" type="button">⏹️ Hentikan Suara</button>
+            ` : `
+              <button id="btn-hud-play-speech" class="btn-neo-accent btn-xs" type="button">🔊 Dengarkan Sekarang</button>
+            `}
           </div>
         </div>
 
@@ -108,17 +220,15 @@ export class BodyScannerGame {
             <div class="scanner-screen-frame">
               ${this.currentLayer === '3d_viewport' ? `
                 <div id="three-canvas-holder" class="three-canvas-holder">
-                  <!-- Injected by ThreeAnatomyViewport -->
                   <div class="three-viewport-overlay-hints">
                     <span>🖱️ Drag Mouse / Sentuh: Putar 360°</span>
-                    <span>🔍 Scroll Wheel: Zoom Detail</span>
+                    <span>🔍 Scroll Wheel: Zoom Kamera</span>
                   </div>
                 </div>
               ` : `
                 <div class="scanner-grid-overlay"></div>
                 <div class="scanner-laser-line"></div>
                 <svg viewBox="0 0 300 560" class="scanner-body-svg">
-                  <!-- Holographic transparent silhouette -->
                   <path d="
                     M 150,25 
                     C 175,25 190,45 190,75 
@@ -195,84 +305,25 @@ export class BodyScannerGame {
                 </span>
               </div>
             </div>
+
+            <!-- Quick Organ Specimen Selector Strip -->
+            <div class="organ-quick-selector-strip">
+              <span class="strip-label">🔬 PILIH SPESIMEN ORGAN UNTUK DIPERIKSA & DIDENGARKAN:</span>
+              <div class="strip-items-scroll">
+                ${Object.values(ORGANS).map(o => `
+                  <button class="strip-organ-btn ${o.id === this.activeOrganId ? 'active' : ''}" data-select-organ="${o.id}" type="button">
+                    <span class="strip-emoji">${o.emoji}</span>
+                    <span class="strip-name">${o.name}</span>
+                    ${this.inspectedOrgans.has(o.id) ? '<span class="strip-check">✓</span>' : ''}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
           </div>
 
           <!-- Right: Organ Clinical Inspection Panel with Photorealistic Medical Renders -->
-          <div class="scanner-info-panel">
-            <div class="organ-spotlight-card realistic-clinical-card" style="border-top: 5px solid ${activeOrgan.primaryColor}">
-              <div class="spotlight-top-meta">
-                <span class="spotlight-badge" style="background:${activeOrgan.primaryColor}25; color:${activeOrgan.primaryColor}; border:1px solid ${activeOrgan.primaryColor};">
-                  ${activeOrgan.systemName}
-                </span>
-                <span class="organ-id-chip">LATIN: ${activeOrgan.latinName}</span>
-              </div>
-
-              <div class="spotlight-header">
-                <!-- High-Resolution Photorealistic 3D Medical Render Asset -->
-                <div class="realistic-render-frame">
-                  ${activeOrgan.realisticImage ? `
-                    <img src="${activeOrgan.realisticImage}" alt="${activeOrgan.name}" class="realistic-organ-img" />
-                  ` : `
-                    <div class="spotlight-svg-box">
-                      ${activeOrgan.renderSVG(100, true)}
-                    </div>
-                  `}
-                  <span class="render-watermark">3D MEDICAL HD</span>
-                </div>
-
-                <div class="spotlight-title-col">
-                  <h3 class="spotlight-name">${activeOrgan.name}</h3>
-                  <span class="spotlight-latin">${activeOrgan.latinName}</span>
-                  <span class="spotlight-tagline">${activeOrgan.funTitle}</span>
-                </div>
-              </div>
-
-              <!-- Clinical Metrics Telemetry Grid -->
-              ${activeOrgan.clinicalMetrics ? `
-                <div class="clinical-metrics-grid">
-                  ${Object.entries(activeOrgan.clinicalMetrics).map(([label, val]) => `
-                    <div class="metric-cell">
-                      <span class="metric-label">${label}</span>
-                      <strong class="metric-val">${val}</strong>
-                    </div>
-                  `).join('')}
-                </div>
-              ` : ''}
-
-              <div class="spotlight-actions">
-                <button id="btn-stethoscope-listen" class="btn-neo-sound-large" type="button">
-                  🩺 Pasang Stetoskop & Dengarkan Akustik
-                </button>
-                <button id="btn-voice-explain" class="btn-neo-secondary btn-sm" type="button">
-                  🔊 Narasi Ilmiah Dokter
-                </button>
-              </div>
-
-              <div class="spotlight-body">
-                <div class="spotlight-section">
-                  <h4 class="section-title">🔍 Fisiologi & Cara Kerja Organ:</h4>
-                  <p class="section-text">${activeOrgan.description}</p>
-                </div>
-
-                <div class="spotlight-section facts-box">
-                  <h4 class="section-title">💡 Fakta Sains Medis Utama:</h4>
-                  <ul class="facts-list">
-                    ${activeOrgan.funFacts.map(fact => `<li>${fact}</li>`).join('')}
-                  </ul>
-                </div>
-
-                <div class="spotlight-section tip-box">
-                  <h4 class="section-title">🥗 Rekomendasi Kesehatan Spesialis:</h4>
-                  <p class="tip-text">${activeOrgan.healthTips}</p>
-                </div>
-              </div>
-
-              <div class="spotlight-footer">
-                <button id="btn-inspect-next" class="btn-neo-primary" type="button">
-                  Periksa Organ Spesimen Berikutnya ➡️
-                </button>
-              </div>
-            </div>
+          <div class="scanner-info-panel" id="scanner-spotlight-holder">
+            ${this.renderSpotlightHTML(activeOrgan)}
           </div>
         </div>
       </div>
@@ -282,6 +333,112 @@ export class BodyScannerGame {
 
     if (this.currentLayer === '3d_viewport') {
       this.initThreeViewport();
+    }
+  }
+
+  private renderSpotlightHTML(activeOrgan: OrganInfo): string {
+    const isSpeaking = sound.isSpeaking();
+
+    return `
+      <div class="organ-spotlight-card realistic-clinical-card" style="border-top: 5px solid ${activeOrgan.primaryColor}">
+        <div class="spotlight-top-meta">
+          <span class="spotlight-badge" style="background:${activeOrgan.primaryColor}25; color:${activeOrgan.primaryColor}; border:1px solid ${activeOrgan.primaryColor};">
+            ${activeOrgan.systemName}
+          </span>
+          <span class="organ-id-chip">LATIN: ${activeOrgan.latinName}</span>
+        </div>
+
+        <div class="spotlight-header">
+          <!-- High-Resolution Photorealistic 3D Medical Render Asset -->
+          <div class="realistic-render-frame">
+            ${activeOrgan.realisticImage ? `
+              <img src="${activeOrgan.realisticImage}" alt="${activeOrgan.name}" class="realistic-organ-img" />
+            ` : `
+              <div class="spotlight-svg-box">
+                ${activeOrgan.renderSVG(100, true)}
+              </div>
+            `}
+            <span class="render-watermark">3D MEDICAL HD</span>
+          </div>
+
+          <div class="spotlight-title-col">
+            <h3 class="spotlight-name">${activeOrgan.name}</h3>
+            <span class="spotlight-latin">${activeOrgan.latinName}</span>
+            <span class="spotlight-tagline">${activeOrgan.funTitle}</span>
+          </div>
+        </div>
+
+        <!-- Clinical Metrics Telemetry Grid -->
+        ${activeOrgan.clinicalMetrics ? `
+          <div class="clinical-metrics-grid">
+            ${Object.entries(activeOrgan.clinicalMetrics).map(([label, val]) => `
+              <div class="metric-cell">
+                <span class="metric-label">${label}</span>
+                <strong class="metric-val">${val}</strong>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <!-- Hero Voice & Audio Controls -->
+        <div class="spotlight-voice-hero">
+          <button id="btn-voice-explain" class="btn-voice-hero ${isSpeaking ? 'speaking-pulse' : ''}" type="button">
+            ${isSpeaking ? '⏹️ HENTIKAN PENJELASAN SUARA DOKTER' : `🔊 DENGARKAN PENJELASAN SUARA: ${activeOrgan.name.toUpperCase()}`}
+          </button>
+          <button id="btn-stethoscope-listen" class="btn-acoustic-listen" type="button">
+            🩺 Uji Suara Akustik Organ (${activeOrgan.soundType})
+          </button>
+        </div>
+
+        <div class="spotlight-body">
+          <div class="spotlight-section">
+            <h4 class="section-title">🔍 Fisiologi & Cara Kerja Organ:</h4>
+            <p class="section-text">${activeOrgan.description}</p>
+          </div>
+
+          <div class="spotlight-section facts-box">
+            <h4 class="section-title">💡 Fakta Sains Medis Utama:</h4>
+            <ul class="facts-list">
+              ${activeOrgan.funFacts.map(fact => `<li>${fact}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="spotlight-section tip-box">
+            <h4 class="section-title">🥗 Rekomendasi Kesehatan Spesialis:</h4>
+            <p class="tip-text">${activeOrgan.healthTips}</p>
+          </div>
+        </div>
+
+        <div class="spotlight-footer">
+          <button id="btn-inspect-next" class="btn-neo-primary" type="button">
+            Periksa Organ Spesimen Berikutnya ➡️
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  private updateSpotlightDOM() {
+    const holder = this.container.querySelector('#scanner-spotlight-holder');
+    if (!holder) return;
+    const activeOrgan = ORGANS[this.activeOrganId] || ORGANS['heart'];
+    holder.innerHTML = this.renderSpotlightHTML(activeOrgan);
+    this.bindSpotlightEvents();
+
+    // Also update quick selector strip active states
+    const stripBtns = this.container.querySelectorAll('[data-select-organ]');
+    stripBtns.forEach(btn => {
+      const id = btn.getAttribute('data-select-organ');
+      if (id === this.activeOrganId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    const statusBadge = this.container.querySelector('.inspected-badge');
+    if (statusBadge) {
+      statusBadge.textContent = `Diperiksa: ${this.inspectedOrgans.size} / ${Object.keys(ORGANS).length}`;
     }
   }
 
@@ -295,8 +452,9 @@ export class BodyScannerGame {
     }
 
     this.threeViewport = new ThreeAnatomyViewport(holder, (organ) => {
-      this.selectOrgan(organ.id);
+      this.selectOrgan(organ.id, true);
     });
+    this.threeViewport.highlightOrgan(this.activeOrganId);
   }
 
   private render2DLayerGraphic(): string {
@@ -337,31 +495,26 @@ export class BodyScannerGame {
     }
 
     return `
-      <!-- Brain -->
       <g class="organ-hotspot ${this.activeOrganId === 'brain' ? 'active-hotspot' : ''}" data-organ="brain" style="cursor:pointer;">
         <foreignObject x="120" y="44" width="60" height="60">
           ${ORGANS.brain.renderSVG(56, true)}
         </foreignObject>
       </g>
-      <!-- Lungs -->
       <g class="organ-hotspot ${this.activeOrganId === 'lungs' ? 'active-hotspot' : ''}" data-organ="lungs" style="cursor:pointer;">
         <foreignObject x="106" y="150" width="88" height="74">
           ${ORGANS.lungs.renderSVG(74, true)}
         </foreignObject>
       </g>
-      <!-- Heart -->
       <g class="organ-hotspot ${this.activeOrganId === 'heart' ? 'active-hotspot' : ''}" data-organ="heart" style="cursor:pointer;">
         <foreignObject x="135" y="172" width="56" height="56">
           ${ORGANS.heart.renderSVG(50, true)}
         </foreignObject>
       </g>
-      <!-- Stomach -->
       <g class="organ-hotspot ${this.activeOrganId === 'stomach' ? 'active-hotspot' : ''}" data-organ="stomach" style="cursor:pointer;">
         <foreignObject x="145" y="235" width="54" height="54">
           ${ORGANS.stomach.renderSVG(48, true)}
         </foreignObject>
       </g>
-      <!-- Kidneys -->
       <g class="organ-hotspot ${this.activeOrganId === 'kidneys' ? 'active-hotspot' : ''}" data-organ="kidneys" style="cursor:pointer;">
         <foreignObject x="122" y="275" width="56" height="40">
           ${ORGANS.kidneys.renderSVG(42, true)}
@@ -377,6 +530,23 @@ export class BodyScannerGame {
         this.destroy();
         sound.playPop();
         this.callbacks.onExit();
+      });
+    }
+
+    // Toggle Auto Voice Narration
+    const autoVoiceBtn = this.container.querySelector('#btn-toggle-autovoice');
+    if (autoVoiceBtn) {
+      autoVoiceBtn.addEventListener('click', () => {
+        const isEnabled = sound.toggleAutoNarration();
+        sound.playPop();
+        autoVoiceBtn.className = `btn-neo-secondary btn-sm ${isEnabled ? 'active-autovoice' : ''}`;
+        autoVoiceBtn.innerHTML = `🎙️ Auto-Suara: <strong>${isEnabled ? 'AKTIF (Otomatis Bicara)' : 'MATI'}</strong>`;
+        if (isEnabled) {
+          const activeOrgan = ORGANS[this.activeOrganId] || ORGANS['heart'];
+          this.narrateOrgan(activeOrgan);
+        } else {
+          sound.stopSpeaking();
+        }
       });
     }
 
@@ -423,13 +593,23 @@ export class BodyScannerGame {
       sound.playPop();
     });
 
-    // Organ Hotspots
+    // Organ Hotspots (2D Layer)
     const hotspots = this.container.querySelectorAll('[data-organ]');
     hotspots.forEach(spot => {
       spot.addEventListener('click', () => {
         const organId = spot.getAttribute('data-organ');
         if (!organId) return;
-        this.selectOrgan(organId);
+        this.selectOrgan(organId, true);
+      });
+    });
+
+    // Organ Quick Selector Strip (All 12 Organs)
+    const stripBtns = this.container.querySelectorAll('[data-select-organ]');
+    stripBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const organId = btn.getAttribute('data-select-organ');
+        if (!organId) return;
+        this.selectOrgan(organId, true);
       });
     });
 
@@ -438,7 +618,9 @@ export class BodyScannerGame {
     if (slider) {
       slider.addEventListener('input', () => {
         this.currentBpm = parseInt(slider.value, 10);
-        this.startHeartbeatLoop();
+        if (this.activeOrganId === 'heart') {
+          this.startHeartbeatLoop();
+        }
         const bpmText = this.container.querySelector('#bpm-val-text');
         if (bpmText) bpmText.textContent = `${this.currentBpm} BPM`;
         const hudBpm = this.container.querySelector('.hud-bpm-val');
@@ -446,7 +628,11 @@ export class BodyScannerGame {
       });
     }
 
-    // Listen button
+    this.bindSpotlightEvents();
+  }
+
+  private bindSpotlightEvents() {
+    // Listen button (Stethoscope Acoustic)
     const listenBtn = this.container.querySelector('#btn-stethoscope-listen');
     if (listenBtn) {
       listenBtn.addEventListener('click', () => {
@@ -455,12 +641,16 @@ export class BodyScannerGame {
       });
     }
 
-    // Voice button
+    // Hero Voice Button
     const voiceBtn = this.container.querySelector('#btn-voice-explain');
     if (voiceBtn) {
       voiceBtn.addEventListener('click', () => {
-        const organ = ORGANS[this.activeOrganId] || ORGANS['heart'];
-        sound.speak(`${organ.name}, nama ilmiah ${organ.latinName}. ${organ.summary}. ${organ.funFacts[0]}`);
+        if (sound.isSpeaking()) {
+          sound.stopSpeaking();
+        } else {
+          const organ = ORGANS[this.activeOrganId] || ORGANS['heart'];
+          this.narrateOrgan(organ);
+        }
       });
     }
 
@@ -471,21 +661,42 @@ export class BodyScannerGame {
         const allIds = Object.keys(ORGANS);
         const idx = allIds.indexOf(this.activeOrganId);
         const nextId = allIds[(idx + 1) % allIds.length];
-        this.selectOrgan(nextId);
+        this.selectOrgan(nextId, true);
       });
     }
   }
 
-  private selectOrgan(organId: string) {
+  private selectOrgan(organId: string, userTriggered: boolean = true) {
     const organ = ORGANS[organId];
     if (!organ) return;
 
     this.activeOrganId = organId;
     this.inspectedOrgans.add(organId);
-    this.playOrganAcoustic(organ);
 
-    this.render();
+    // Heartbeat audio ONLY runs when heart is active!
+    if (organId === 'heart') {
+      this.startHeartbeatLoop();
+    } else {
+      this.stopHeartbeatLoop();
+    }
+
+    // Smoothly focus 3D camera without destroying WebGL scene
+    if (this.threeViewport) {
+      this.threeViewport.highlightOrgan(organId);
+    }
+
+    // Update the right-side spotlight card and quick strip
+    this.updateSpotlightDOM();
     this.callbacks.onOrganInspected(organ);
+
+    // Trigger Indonesian doctor voice narration
+    if (userTriggered) {
+      if (sound.isAutoNarrationEnabled()) {
+        this.narrateOrgan(organ);
+      } else {
+        this.playOrganAcoustic(organ);
+      }
+    }
 
     if (this.inspectedOrgans.size === Object.keys(ORGANS).length) {
       confetti.burst(60);

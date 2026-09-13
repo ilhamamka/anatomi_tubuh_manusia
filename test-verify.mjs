@@ -98,4 +98,26 @@ const brandLogo = renderBrandLogo();
 assert.ok(brandLogo.includes('ANATOMI TUBUH KITA'), 'Brand logo must render proper title');
 console.log('✅ Custom vector SVG icon suite verified.');
 
+// 7. Verify Audio Engine Lifecycle & Component Cleanups
+import { sound } from './src/audio.ts';
+import { BodyScannerGame } from './src/game-scanner.ts';
+import { AnatomyChartManager } from './src/anatomy-chart.ts';
+import { OrganAssemblyGame } from './src/game-assembly.ts';
+import { ClinicGame } from './src/game-clinic.ts';
+import { SandboxManager } from './src/sandbox.ts';
+
+assert.equal(typeof sound.stopSpeaking, 'function', 'sound.stopSpeaking must exist');
+assert.equal(typeof sound.stopAll, 'function', 'sound.stopAll must exist');
+assert.equal(typeof sound.onSpeakingChange, 'function', 'sound.onSpeakingChange must exist');
+assert.equal(typeof sound.toggleAutoNarration, 'function', 'sound.toggleAutoNarration must exist');
+assert.equal(typeof sound.isAutoNarrationEnabled, 'function', 'sound.isAutoNarrationEnabled must exist');
+
+// Verify destroy methods exist on all interactive games and managers
+assert.equal(typeof BodyScannerGame.prototype.destroy, 'function', 'BodyScannerGame must implement destroy() to prevent audio/WebGL leaks');
+assert.equal(typeof AnatomyChartManager.prototype.destroy, 'function', 'AnatomyChartManager must implement destroy()');
+assert.equal(typeof OrganAssemblyGame.prototype.destroy, 'function', 'OrganAssemblyGame must implement destroy()');
+assert.equal(typeof ClinicGame.prototype.destroy, 'function', 'ClinicGame must implement destroy()');
+assert.equal(typeof SandboxManager.prototype.destroy, 'function', 'SandboxManager must implement destroy()');
+console.log('✅ Audio engine lifecycle and component destroy contracts verified.');
+
 console.log('\n🎉 ALL ANATOMI TUBUH MANUSIA VERIFICATION TESTS PASSED SUCCESSFULLY! 🩺✨\n');
