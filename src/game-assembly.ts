@@ -1,5 +1,5 @@
-// Laboratorium Pasang Organ (Anatomy Assembly Game)
-// Drag & drop or tap-to-place organs into accurate human silhouette slots
+// Laboratorium Pasang Organ (High-Ticket 3D Holographic Surgical Assembly Workstation)
+// Photorealistic 3D medical renders, precision docking ports, authentic audio physics & voiceover
 
 import { ORGANS, type OrganInfo } from './organs-data';
 import { sound } from './audio';
@@ -11,12 +11,35 @@ export interface AssemblyCallbacks {
   onExit: () => void;
 }
 
+interface DockingPortConfig {
+  x: number; // percentage of mannequin stage width (0-100)
+  y: number; // percentage of mannequin stage height (0-100)
+  size: number; // visual slot size in px
+  label: string;
+}
+
+const DOCKING_PORTS: Record<string, DockingPortConfig> = {
+  brain: { x: 50, y: 11, size: 68, label: 'Kranium Kepala: Otak' },
+  senses_eye: { x: 46.5, y: 13, size: 42, label: 'Orbita Wajah: Mata' },
+  senses_ear: { x: 53.5, y: 13, size: 42, label: 'Temporal: Telinga' },
+  lungs: { x: 50, y: 25.5, size: 82, label: 'Rongga Toraks: Paru-Paru' },
+  heart: { x: 53, y: 27.5, size: 64, label: 'Mediastinum Dada: Jantung' },
+  blood_cells: { x: 38, y: 29, size: 52, label: 'Sirkulasi Brakialis: Darah' },
+  skeleton: { x: 50, y: 22, size: 76, label: 'Kolom Vertebra: Rangka' },
+  liver: { x: 45.5, y: 35.5, size: 68, label: 'Hipokondrium Kanan: Hati' },
+  stomach: { x: 54, y: 36.5, size: 64, label: 'Epigastrium Kiri: Lambung' },
+  kidneys: { x: 50, y: 39, size: 60, label: 'Retroperitoneal: Ginjal' },
+  intestines: { x: 50, y: 44.5, size: 76, label: 'Rongga Abdomen: Usus' },
+  senses_skin: { x: 62, y: 41, size: 56, label: 'Sensor Epidermis: Kulit' }
+};
+
 export class OrganAssemblyGame {
   private container: HTMLElement;
   private callbacks: AssemblyCallbacks;
   private requiredOrgans: string[] = ['brain', 'heart', 'lungs', 'stomach', 'liver', 'intestines', 'kidneys', 'skeleton'];
   private placedOrgans: Set<string> = new Set();
   private selectedOrganId: string | null = null;
+  private activeInspectedOrgan: OrganInfo | null = null;
 
   constructor(container: HTMLElement, callbacks: AssemblyCallbacks) {
     this.container = container;
@@ -27,7 +50,11 @@ export class OrganAssemblyGame {
     this.requiredOrgans = organIds && organIds.length > 0 ? organIds : ['brain', 'heart', 'lungs', 'stomach', 'liver', 'intestines', 'kidneys', 'skeleton'];
     this.placedOrgans.clear();
     this.selectedOrganId = null;
+    this.activeInspectedOrgan = null;
     this.render();
+
+    // Friendly opening voice prompt
+    sound.speak(`Selamat datang di Laboratorium Bedah Anatomi. Silakan pilih organ di panel sebelah kanan untuk dipasang ke tubuh manekin holografis.`);
   }
 
   public destroy() {
@@ -35,122 +62,101 @@ export class OrganAssemblyGame {
   }
 
   private render() {
+    const total = this.requiredOrgans.length;
+    const placed = this.placedOrgans.size;
+    const progressPct = Math.round((placed / total) * 100);
+
     this.container.innerHTML = `
-      <div class="assembly-game-wrapper">
+      <div class="assembly-game-wrapper dark-medical-workstation">
+        <!-- Workstation Top Header -->
         <div class="assembly-header">
           <div class="assembly-title-box">
-            <h2 class="assembly-title">🧪 Laboratorium Bedah & Pasang Organ</h2>
-            <p class="assembly-desc">Pasangkan organ ke posisi tubuh yang tepat!</p>
-          </div>
-          <div class="assembly-progress-capsule">
-            <span class="progress-pill-label">Progres:</span>
-            <span class="progress-pill-val" id="assembly-count">${this.placedOrgans.size} / ${this.requiredOrgans.length}</span>
-            <div class="progress-pill-track">
-              <div class="progress-pill-fill" style="width: ${(this.placedOrgans.size / this.requiredOrgans.length) * 100}%"></div>
+            <div class="medical-tag-row">
+              <span class="medical-telemetry-badge">🔬 WORKSTATION BEDAH & DOCKING ANATOMI 3D</span>
+              <span class="medical-fps-badge">PRESISI TINGGI</span>
             </div>
+            <h2 class="assembly-title">🧪 Laboratorium Bedah & Rekonstruksi Tubuh</h2>
+            <p class="assembly-desc">Pasangkan spesimen organ 3D fotorealistis ke soket anatomi tubuh manekin holografis.</p>
           </div>
-          <button id="btn-assembly-exit" class="btn-neo-secondary btn-sm" type="button">Kembali</button>
+
+          <div class="assembly-header-actions">
+            <div class="assembly-progress-capsule">
+              <span class="progress-pill-label">Rekonstruksi:</span>
+              <span class="progress-pill-val" id="assembly-count">${placed} / ${total} Organ</span>
+              <div class="progress-pill-track">
+                <div class="progress-pill-fill" style="width: ${progressPct}%"></div>
+              </div>
+              <span class="progress-pct-badge">${progressPct}%</span>
+            </div>
+            <button id="btn-assembly-exit" class="btn-neo-secondary btn-sm" type="button">Kembali ke Beranda</button>
+          </div>
         </div>
 
+        <!-- Main Assembly Stage -->
         <div class="assembly-stage-layout">
-          <!-- Left: Human Body Silhouette Target Area -->
-          <div class="silhouette-container">
-            <div class="silhouette-canvas" id="silhouette-dropzone">
-              <!-- Human Body SVG Silhouette with designated organ drop targets -->
-              <svg viewBox="0 0 300 560" class="human-silhouette-svg">
-                <defs>
-                  <linearGradient id="bodySkinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#070e1b" />
-                    <stop offset="100%" stop-color="#0f1f38" />
-                  </linearGradient>
-                  <filter id="glowDrop" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#00f0ff" flood-opacity="0.4"/>
-                  </filter>
-                </defs>
+          <!-- Left: 3D Holographic Surgical Mannequin Operating Table -->
+          <div class="assembly-operating-theater">
+            <div class="theater-glow-halo"></div>
 
-                <!-- Human Outline Silhouette (Cyber-Medical Hologram) -->
-                <path d="
-                  M 150,25 
-                  C 175,25 190,45 190,75 
-                  C 190,95 180,110 172,120 
-                  C 185,126 215,138 235,165 
-                  C 255,195 265,270 262,310 
-                  C 260,320 248,322 242,314 
-                  C 235,285 224,225 212,205 
-                  C 210,230 210,280 210,315 
-                  C 210,335 220,380 220,440 
-                  C 220,500 210,535 192,535 
-                  C 180,535 174,510 170,450 
-                  C 165,395 158,355 150,355 
-                  C 142,355 135,395 130,450 
-                  C 126,510 120,535 108,535 
-                  C 90,535 80,500 80,440 
-                  C 80,380 90,335 90,315 
-                  C 90,280 90,230 88,205 
-                  C 76,225 65,285 58,314 
-                  C 52,322 40,320 38,310 
-                  C 35,270 45,195 65,165 
-                  C 85,138 115,126 128,120 
-                  C 120,110 110,95 110,75 
-                  C 110,45 125,25 150,25 Z" 
-                  fill="url(#bodySkinGrad)" 
-                  stroke="#00f0ff" 
-                  stroke-width="2.5"
-                  stroke-linejoin="round"
-                />
+            <div class="mannequin-viewport-box">
+              <img src="/assets/assembly_mannequin_table.png" alt="Manekin Holografik 3D" class="mannequin-base-img" />
+              <div class="theater-scan-grid"></div>
+              <div class="theater-laser-sweep"></div>
 
-                <!-- Spine & Ribcage Holographic Guide -->
-                <line x1="150" y1="120" x2="150" y2="340" stroke="#38bdf8" stroke-width="4" opacity="0.4" stroke-linecap="round"/>
-                <path d="M 130,170 C 145,165 155,165 170,170 M 125,185 C 145,180 155,180 175,185 M 128,200 C 145,195 155,195 172,200" stroke="#38bdf8" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
-
-                <!-- Interactive Drop Target Zones -->
+              <!-- Interactive Docking Port Sockets -->
+              <div class="docking-ports-overlay" id="docking-ports-overlay">
                 ${this.requiredOrgans.map(id => {
                   const organ = ORGANS[id];
-                  if (!organ) return '';
+                  const cfg = DOCKING_PORTS[id] || { x: 50, y: 30, size: 60, label: organ.name };
                   const isPlaced = this.placedOrgans.has(id);
                   const isSelected = this.selectedOrganId === id;
-                  // Map target percentages to 300x560 canvas
-                  const cx = (organ.targetPos.x / 100) * 300;
-                  const cy = (organ.targetPos.y / 100) * 560;
-                  const rx = (organ.targetPos.width / 100) * 150;
-                  const ry = (organ.targetPos.height / 100) * 280;
 
                   return `
-                    <g class="drop-target-group ${isPlaced ? 'placed' : 'unplaced'} ${isSelected ? 'targeted' : ''}" 
-                       data-organ-id="${id}" 
-                       role="button" 
-                       tabindex="0"
-                       aria-label="Zona Organ ${organ.name}">
-                      <!-- Dashed Target Outline -->
-                      <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" 
-                               class="target-slot-ellipse ${isPlaced ? 'slot-filled' : 'slot-empty'}"
-                               fill="${isPlaced ? 'rgba(255,255,255,0.92)' : 'rgba(255, 255, 255, 0.45)'}"
-                               stroke="${isPlaced ? organ.primaryColor : '#94a3b8'}" 
-                               stroke-width="${isPlaced ? '3' : '2'}" 
-                               stroke-dasharray="${isPlaced ? 'none' : '5 4'}"/>
+                    <div class="docking-socket ${isPlaced ? 'placed' : 'unplaced'} ${isSelected ? 'is-targeted' : ''}"
+                         style="left: ${cfg.x}%; top: ${cfg.y}%; width: ${cfg.size}px; height: ${cfg.size}px;"
+                         data-target-socket="${id}"
+                         role="button"
+                         tabindex="0"
+                         title="${cfg.label}">
                       
                       ${!isPlaced ? `
-                        <!-- Target Ghost Label Icon -->
-                        <text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="16" opacity="0.65" pointer-events="none">${organ.emoji}</text>
+                        <!-- Empty Holographic Target Beacon -->
+                        <div class="socket-beacon-ring ${isSelected ? 'beacon-pulse-active' : ''}"></div>
+                        <div class="socket-crosshair">+</div>
+                        <span class="socket-emoji">${organ.emoji}</span>
+                        ${isSelected ? `
+                          <div class="target-prompt-tooltip">🎯 PASANG DI SINI!</div>
+                        ` : ''}
                       ` : `
-                        <!-- Rendered In-Place Mini Vector Graphic -->
-                        <g transform="translate(${cx - 26}, ${cy - 26})">
-                          <foreignObject width="52" height="52">
-                            ${organ.renderSVG(52, true)}
-                          </foreignObject>
-                        </g>
+                        <!-- Placed Photorealistic 3D Specimen inside Body -->
+                        <div class="placed-organ-embedded">
+                          <img src="${organ.realisticImage || '/assets/realistic_heart_3d.png'}" 
+                               alt="${organ.name}" 
+                               class="embedded-3d-render" />
+                          <div class="embedded-organ-halo" style="background: radial-gradient(circle, ${organ.primaryColor}55 0%, transparent 70%);"></div>
+                          <span class="placed-check-dot">✓</span>
+                        </div>
                       `}
-                    </g>
+                    </div>
                   `;
                 }).join('')}
-              </svg>
+              </div>
+
+              <div class="theater-telemetry-hud">
+                <span class="theater-hud-line">● BIO-CONTAINMENT: STABIL</span>
+                <span class="theater-hud-line">● DOCKING PORT: SIAP</span>
+              </div>
             </div>
           </div>
 
-          <!-- Right: Organ Tray / Dock -->
-          <div class="organ-tray-panel">
-            <h3 class="tray-title">Pilih Organ untuk Dipasang:</h3>
-            <div class="tray-grid" id="organ-tray-items">
+          <!-- Right: 3D Surgical Specimen Tray -->
+          <div class="assembly-tray-column">
+            <div class="tray-column-header">
+              <h3 class="tray-heading">📦 Baki Spesimen Bedah Organ:</h3>
+              <p class="tray-sub">Pilih organ untuk dipasang atau dengarkan suara penjelasannya</p>
+            </div>
+
+            <div class="tray-cards-scrollable" id="tray-cards-container">
               ${this.requiredOrgans.map(id => {
                 const organ = ORGANS[id];
                 if (!organ) return '';
@@ -158,34 +164,86 @@ export class OrganAssemblyGame {
                 const isSelected = this.selectedOrganId === id;
 
                 return `
-                  <div class="organ-tray-card ${isPlaced ? 'placed-card' : ''} ${isSelected ? 'selected' : ''}" 
-                       data-organ-id="${id}" 
-                       tabindex="0"
+                  <div class="surgical-specimen-card ${isPlaced ? 'is-placed-specimen' : ''} ${isSelected ? 'is-selected-specimen' : ''}"
+                       data-specimen-id="${id}"
                        role="button"
-                       title="${organ.funTitle}">
-                    <div class="tray-card-preview">
-                      ${organ.renderSVG(64, !isPlaced)}
+                       tabindex="0"
+                       style="border-left: 4px solid ${organ.primaryColor};">
+                    
+                    <div class="specimen-card-visual">
+                      <img src="${organ.realisticImage || '/assets/realistic_heart_3d.png'}" 
+                           alt="${organ.name}" 
+                           class="specimen-3d-thumb" />
+                      <span class="specimen-3d-badge">3D HD</span>
+                      ${isPlaced ? '<span class="specimen-docked-tag">✓ DOCKED</span>' : ''}
                     </div>
-                    <div class="tray-card-info">
-                      <span class="card-organ-name">${organ.name}</span>
-                      <span class="card-latin-name">${organ.latinName}</span>
+
+                    <div class="specimen-card-content">
+                      <div class="specimen-meta-row">
+                        <span class="specimen-system-tag" style="color:${organ.primaryColor};">${organ.systemName}</span>
+                        <span class="specimen-latin">LATIN: ${organ.latinName}</span>
+                      </div>
+                      <h4 class="specimen-title">${organ.name}</h4>
+                      <p class="specimen-summary">${organ.summary}</p>
+
+                      <div class="specimen-actions-row">
+                        ${!isPlaced ? `
+                          <button class="btn-dock-organ ${isSelected ? 'btn-dock-active' : ''}" data-action-dock="${id}" type="button">
+                            ${isSelected ? '🎯 Klik Target di Tubuh!' : '📥 Ambil & Pasang Organ'}
+                          </button>
+                        ` : `
+                          <button class="btn-inspect-docked" data-action-inspect="${id}" type="button">
+                            🔍 Inspeksi Detail & Fakta
+                          </button>
+                        `}
+                        <button class="btn-listen-mini" data-action-voice="${id}" type="button" title="Dengarkan Suara Penjelasan">
+                          🔊 Dengar
+                        </button>
+                      </div>
                     </div>
-                    ${isPlaced ? `
-                      <span class="tray-placed-check">✓ Terpasang</span>
-                    ` : `
-                      <button class="btn-tray-action" type="button">${isSelected ? 'Dipilih' : 'Pasang'}</button>
-                    `}
                   </div>
                 `;
               }).join('')}
             </div>
-
-            <!-- Organ Inspection Drawer / Facts Popup -->
-            <div class="organ-info-drawer" id="organ-info-drawer" style="display:none;">
-              <!-- Injected on organ click -->
-            </div>
           </div>
         </div>
+
+        <!-- Bottom: Active Organ Clinical Inspection Drawer -->
+        ${this.activeInspectedOrgan ? `
+          <div class="assembly-drawer-card" id="assembly-active-drawer">
+            <div class="drawer-header">
+              <div class="drawer-title-group">
+                <span class="drawer-badge" style="background:${this.activeInspectedOrgan.primaryColor}25; color:${this.activeInspectedOrgan.primaryColor};">
+                  ${this.activeInspectedOrgan.systemName}
+                </span>
+                <h3 class="drawer-name">${this.activeInspectedOrgan.name} <span class="drawer-latin">(${this.activeInspectedOrgan.latinName})</span></h3>
+              </div>
+              <div class="drawer-actions">
+                <button id="btn-drawer-speak" class="btn-neo-accent btn-sm" type="button">
+                  🔊 Dengarkan Suara Dokter
+                </button>
+                <button id="btn-close-drawer" class="btn-neo-secondary btn-sm" type="button">Tutup</button>
+              </div>
+            </div>
+
+            <div class="drawer-body-grid">
+              <div class="drawer-render-col">
+                <img src="${this.activeInspectedOrgan.realisticImage || '/assets/realistic_heart_3d.png'}" 
+                     alt="${this.activeInspectedOrgan.name}" 
+                     class="drawer-render-large" />
+              </div>
+              <div class="drawer-details-col">
+                <p class="drawer-desc">${this.activeInspectedOrgan.description}</p>
+                <div class="drawer-fact-box">
+                  <strong>💡 Fakta Medis:</strong> ${this.activeInspectedOrgan.funFacts[0]}
+                </div>
+                <div class="drawer-tip-box">
+                  <strong>🩺 Tips Sehat:</strong> ${this.activeInspectedOrgan.healthTips}
+                </div>
+              </div>
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
 
@@ -193,88 +251,95 @@ export class OrganAssemblyGame {
   }
 
   private bindEvents() {
-    const exitBtn = this.container.querySelector('#btn-assembly-exit');
-    if (exitBtn) {
-      exitBtn.addEventListener('click', () => {
-        sound.playPop();
-        this.callbacks.onExit();
-      });
-    }
-
-    // Organ Tray Cards Click
-    const cards = this.container.querySelectorAll('.organ-tray-card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const id = card.getAttribute('data-organ-id');
-        if (!id) return;
-        const organ = ORGANS[id];
-        if (!organ) return;
-
-        sound.playPop(1.1);
-        this.selectedOrganId = id;
-        this.showOrganFactDrawer(organ);
-        this.updateSelectedCardStyles();
-      });
+    // Exit button
+    this.container.querySelector('#btn-assembly-exit')?.addEventListener('click', () => {
+      this.destroy();
+      sound.playPop();
+      this.callbacks.onExit();
     });
 
-    // Silhouette Drop Target Click
-    const targets = this.container.querySelectorAll('.drop-target-group');
-    targets.forEach(target => {
-      target.addEventListener('click', () => {
-        const targetId = target.getAttribute('data-organ-id');
-        if (!targetId) return;
+    // Tray card clicks
+    const specimenCards = this.container.querySelectorAll('[data-specimen-id]');
+    specimenCards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const id = card.getAttribute('data-specimen-id');
+        if (!id) return;
 
-        if (this.placedOrgans.has(targetId)) {
-          // Organ is already placed, inspect it
-          const organ = ORGANS[targetId];
+        // If clicking voice button
+        if (target.closest('[data-action-voice]')) {
+          e.stopPropagation();
+          const organ = ORGANS[id];
           if (organ) {
             this.playOrganSound(organ);
-            this.showOrganFactDrawer(organ);
+            sound.speak(`Organ ${organ.name}. Nama Latin: ${organ.latinName}. ${organ.summary}. ${organ.description}`);
           }
           return;
         }
 
-        // If an organ is selected from the tray
+        // If organ is already placed, open inspection drawer
+        if (this.placedOrgans.has(id)) {
+          this.activeInspectedOrgan = ORGANS[id] || null;
+          this.render();
+          return;
+        }
+
+        // Select organ to place
+        sound.playPop();
+        this.selectedOrganId = id;
+        const organ = ORGANS[id];
+        sound.speak(`Pilih lokasi yang tepat untuk ${organ.name}.`);
+        this.render();
+      });
+    });
+
+    // Docking port socket clicks
+    const sockets = this.container.querySelectorAll('[data-target-socket]');
+    sockets.forEach(sock => {
+      sock.addEventListener('click', () => {
+        const targetId = sock.getAttribute('data-target-socket');
+        if (!targetId) return;
+
+        // If already placed, show drawer
+        if (this.placedOrgans.has(targetId)) {
+          this.activeInspectedOrgan = ORGANS[targetId] || null;
+          sound.playPop();
+          this.render();
+          return;
+        }
+
+        // If an organ is selected from tray
         if (this.selectedOrganId) {
           if (this.selectedOrganId === targetId) {
             this.placeOrgan(targetId);
           } else {
             sound.playWrong();
             const wrongOrgan = ORGANS[this.selectedOrganId];
-            sound.speak(`Kurang tepat, itu bukan tempat ${wrongOrgan.name}. Coba cari posisinya yang sesuai!`);
+            sound.speak(`Kurang tepat, itu bukan tempat ${wrongOrgan.name}. Cari lokasi yang sesuai!`);
           }
         } else {
-          // If no organ selected yet, prompt user to select from tray
+          // No organ selected yet: select this target organ directly from tray
           this.selectedOrganId = targetId;
-          this.updateSelectedCardStyles();
           const organ = ORGANS[targetId];
-          if (organ) {
-            sound.speak(`Pilih ${organ.name} dari daftar di sebelah kanan untuk dipasang!`);
-          }
+          sound.playPop();
+          sound.speak(`Organ ${organ.name} dipilih. Tekan pasang untuk merekonstruksi!`);
+          this.placeOrgan(targetId);
         }
       });
     });
-  }
 
-  private updateSelectedCardStyles() {
-    const cards = this.container.querySelectorAll('.organ-tray-card');
-    cards.forEach(c => {
-      const id = c.getAttribute('data-organ-id');
-      if (id === this.selectedOrganId) {
-        c.classList.add('selected');
-      } else {
-        c.classList.remove('selected');
-      }
+    // Drawer action buttons
+    this.container.querySelector('#btn-close-drawer')?.addEventListener('click', () => {
+      this.activeInspectedOrgan = null;
+      sound.playPop();
+      this.render();
     });
 
-    const targets = this.container.querySelectorAll('.drop-target-group');
-    targets.forEach(t => {
-      const id = t.getAttribute('data-organ-id');
-      if (id === this.selectedOrganId) {
-        t.classList.add('targeted');
-      } else {
-        t.classList.remove('targeted');
-      }
+    this.container.querySelector('#btn-drawer-speak')?.addEventListener('click', () => {
+      if (!this.activeInspectedOrgan) return;
+      const o = this.activeInspectedOrgan;
+      this.playOrganSound(o);
+      sound.speak(`Organ ${o.name}. Nama Latin: ${o.latinName}. ${o.summary}. ${o.description}. Fakta penting: ${o.funFacts[0]}. Saran sehat dokter: ${o.healthTips}`);
     });
   }
 
@@ -284,18 +349,16 @@ export class OrganAssemblyGame {
 
     this.placedOrgans.add(organId);
     this.selectedOrganId = null;
+    this.activeInspectedOrgan = organ;
 
-    // Trigger specific sound effects
+    // Authentic surgical dock sounds
     sound.playBoneSnap();
     this.playOrganSound(organ);
+    confetti.burst(50);
 
-    // Friendly TTS speech
-    sound.speak(`Hebat! Kamu berhasil memasang ${organ.name} dengan tepat! ${organ.summary}`);
+    // Spoken educational feedback in natural Indonesian
+    sound.speak(`Hebat! Kamu berhasil merekonstruksi ${organ.name} ke posisi yang tepat. ${organ.summary}`);
 
-    // Show fact drawer
-    this.showOrganFactDrawer(organ);
-
-    // Re-render UI to update silhouette & tray
     this.render();
 
     const remaining = this.requiredOrgans.length - this.placedOrgans.size;
@@ -304,7 +367,7 @@ export class OrganAssemblyGame {
     if (remaining === 0) {
       setTimeout(() => {
         this.handleAllPlacedWin();
-      }, 500);
+      }, 700);
     }
   }
 
@@ -326,86 +389,32 @@ export class OrganAssemblyGame {
         sound.playBoneSnap();
         break;
       default:
-        sound.playCorrect();
+        sound.playScannerBeep(880);
         break;
-    }
-  }
-
-  private showOrganFactDrawer(organ: OrganInfo) {
-    const drawer = this.container.querySelector('#organ-info-drawer') as HTMLElement;
-    if (!drawer) return;
-
-    drawer.style.display = 'block';
-    drawer.innerHTML = `
-      <div class="drawer-inner" style="border-top: 4px solid ${organ.primaryColor};">
-        <div class="drawer-header">
-          <div class="drawer-title-col">
-            <span class="drawer-badge" style="background:${organ.primaryColor}20; color:${organ.secondaryColor};">${organ.systemName}</span>
-            <h4 class="drawer-organ-name">${organ.funTitle} (${organ.name})</h4>
-            <span class="drawer-latin-italic">${organ.latinName}</span>
-          </div>
-          <button id="btn-listen-organ" class="btn-neo-sound" title="Dengarkan Suara Organ" type="button">
-            🔊 Dengar Suara
-          </button>
-        </div>
-
-        ${organ.realisticImage ? `
-          <div class="drawer-real-render-box">
-            <img src="${organ.realisticImage}" alt="${organ.name}" class="drawer-real-img" />
-          </div>
-        ` : ''}
-
-        <p class="drawer-summary">${organ.summary}</p>
-        
-        ${organ.clinicalMetrics ? `
-          <div class="drawer-metrics-chips">
-            ${Object.entries(organ.clinicalMetrics).map(([k, v]) => `
-              <span class="drawer-metric-item"><strong>${k}:</strong> ${v}</span>
-            `).join('')}
-          </div>
-        ` : ''}
-
-        <div class="drawer-fun-fact">
-          <strong>💡 Tahukah Kamu?</strong>
-          <p>${organ.funFacts[0]}</p>
-        </div>
-        <div class="drawer-health-tip">
-          <strong>🩺 Tips Sehat Dokter Cilik:</strong>
-          <p>${organ.healthTips}</p>
-        </div>
-      </div>
-    `;
-
-    const listenBtn = drawer.querySelector('#btn-listen-organ');
-    if (listenBtn) {
-      listenBtn.addEventListener('click', () => {
-        this.playOrganSound(organ);
-        sound.speak(`Organ ${organ.name}. Nama ilmiah: ${organ.latinName}. ${organ.summary}. ${organ.description}. Fakta menarik: ${organ.funFacts[0]}. Saran sehat: ${organ.healthTips}`);
-      });
     }
   }
 
   private handleAllPlacedWin() {
     sound.playFanfare();
-    confetti.burst(100);
+    confetti.burst(120);
 
     const xp = 350;
     const stars = 3;
 
     const modal = document.createElement('div');
-    modal.className = 'neo-modal-overlay';
+    modal.className = 'neo-modal-overlay dark-modal-overlay';
     modal.innerHTML = `
-      <div class="neo-modal-card">
+      <div class="neo-modal-card dark-modal-card">
         <div class="modal-star-award">⭐⭐⭐</div>
-        <h2 class="modal-title">Luar Biasa, Dokter Cilik!</h2>
-        <p class="modal-desc">Kamu telah berhasil menyusun seluruh organ tubuh manusia dengan presisi dan sempurna!</p>
+        <h2 class="modal-title" style="color:#00f0ff;">🎉 Rekonstruksi Sempurna, Dokter Cilik!</h2>
+        <p class="modal-desc" style="color:#cbd5e1;">Kamu telah berhasil merekonstruksi seluruh organ tubuh manusia ke posisi anatomi yang tepat!</p>
         
         <div class="modal-reward-pills">
           <div class="reward-pill">+${xp} XP Dokter</div>
           <div class="reward-pill">+${stars} Bintang Medis</div>
         </div>
 
-        <button id="btn-modal-win-continue" class="btn-neo-primary" type="button">
+        <button id="btn-modal-win-continue" class="btn-neo-primary btn-glow-cyan" type="button">
           Lanjut ke Misi Berikutnya 🚀
         </button>
       </div>

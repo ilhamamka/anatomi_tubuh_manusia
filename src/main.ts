@@ -35,6 +35,7 @@ class App {
     this.bindGlobalEvents();
     this.updateAudioIcons();
     this.setupPWAAndWakeLock();
+    this.setupHashRouting();
   }
 
   private renderBrandAndIcons() {
@@ -133,11 +134,11 @@ class App {
 
     const profile = leaderboard.getProfile();
     container.innerHTML = `
-      <div style="background:#ffffff; border:2px solid var(--ink-line); border-radius:var(--radius-pill); padding:6px 14px; display:flex; align-items:center; gap:8px; box-shadow:var(--shadow-sm);">
+      <div style="background:rgba(11, 19, 37, 0.92); border:1px solid rgba(0, 240, 255, 0.35); border-radius:var(--radius-pill); padding:6px 14px; display:flex; align-items:center; gap:8px; box-shadow:0 0 15px rgba(0,240,255,0.15); backdrop-filter:blur(10px);">
         <span style="font-size:18px;">${profile.avatar}</span>
         <div style="line-height:1.2;">
-          <strong style="font-size:13px; display:block;">${profile.name}</strong>
-          <span style="font-size:11px; color:#e11d48; font-weight:800;">${profile.xp} XP · ${profile.stars} ⭐</span>
+          <strong style="font-size:13px; display:block; color:#f8fafc;">${profile.name}</strong>
+          <span style="font-size:11px; color:#38bdf8; font-weight:800;">${profile.xp} XP · ${profile.stars} ⭐</span>
         </div>
       </div>
     `;
@@ -201,7 +202,7 @@ class App {
     this.switchScreen('screen-assembly');
   }
 
-  public switchScreen(screenId: string) {
+  public switchScreen(screenId: string, updateHash = true) {
     // Clean up ongoing loops, speech, and component states
     sound.stopSpeaking();
 
@@ -229,6 +230,15 @@ class App {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    if (updateHash) {
+      const hashName = screenId.replace('screen-', '');
+      try {
+        history.replaceState(null, '', `#${hashName}`);
+      } catch {
+        // Fallback for strict sandbox iframe environments
+      }
+    }
+
     if (screenId === 'screen-chart') {
       this.chartManager.render('all');
     } else if (screenId === 'screen-sandbox') {
@@ -242,6 +252,41 @@ class App {
     } else if (screenId === 'screen-home') {
       this.renderPlayerProfilePill();
       this.renderCurriculumLevels();
+    }
+  }
+
+  private setupHashRouting() {
+    window.addEventListener('hashchange', () => this.handleHashRoute());
+    if (window.location.hash) {
+      this.handleHashRoute();
+    }
+  }
+
+  private handleHashRoute() {
+    const raw = (window.location.hash || '').replace('#', '').trim();
+    if (!raw) return;
+
+    if (raw === 'assembly') {
+      this.assemblyGame.startLevel();
+      this.switchScreen('screen-assembly', false);
+    } else if (raw === 'scanner') {
+      this.scannerGame.start();
+      this.switchScreen('screen-scanner', false);
+    } else if (raw === 'clinic') {
+      this.clinicGame.start();
+      this.switchScreen('screen-clinic', false);
+    } else if (raw === 'chart') {
+      this.switchScreen('screen-chart', false);
+    } else if (raw === 'sandbox') {
+      this.switchScreen('screen-sandbox', false);
+    } else if (raw === 'guide') {
+      this.switchScreen('screen-guide', false);
+    } else if (raw === 'leaderboard') {
+      this.switchScreen('screen-leaderboard', false);
+    } else if (raw === 'worksheets') {
+      this.switchScreen('screen-worksheets', false);
+    } else if (raw === 'home') {
+      this.switchScreen('screen-home', false);
     }
   }
 
