@@ -1900,18 +1900,18 @@ main {
    =================================================== */
 
 .medical-hero-cockpit {
-  background: linear-gradient(135deg, #070b14 0%, #0f1f38 100%) !important;
-  border: 2.5px solid #00f0ff !important;
-  box-shadow: 0 12px 40px rgba(0, 240, 255, 0.18) !important;
-  color: #f8fafc !important;
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 45%, #fff7ed 100%) !important;
+  border: 3px solid var(--ink-line) !important;
+  box-shadow: var(--shadow-lg) !important;
+  color: var(--ink-line) !important;
 }
 
 .medical-hero-cockpit .hero-title {
-  color: #f8fafc !important;
+  color: var(--ink-line) !important;
 }
 
 .medical-hero-cockpit .hero-desc {
-  color: #cbd5e1 !important;
+  color: #475569 !important;
 }
 
 .hero-status-row {
@@ -1929,6 +1929,7 @@ main {
   font-weight: 900;
   padding: 4px 12px;
   border-radius: var(--radius-pill);
+  border: 2px solid var(--ink-line);
   letter-spacing: 0.8px;
 }
 
@@ -1936,9 +1937,9 @@ main {
   font-family: monospace;
   font-size: 12px;
   font-weight: 800;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #047857;
+  background: #d1fae5;
+  border: 2px solid var(--ink-line);
   padding: 4px 12px;
   border-radius: var(--radius-pill);
 }
@@ -1949,9 +1950,9 @@ main {
   height: 320px;
   border-radius: 24px;
   overflow: hidden;
-  border: 2.5px solid #00f0ff;
-  box-shadow: 0 0 35px rgba(0, 240, 255, 0.35);
-  background: #020617;
+  border: 3px solid var(--ink-line);
+  box-shadow: var(--shadow-md);
+  background: #ffffff;
   flex-shrink: 0;
 }
 
@@ -1972,25 +1973,27 @@ main {
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: rgba(7, 11, 20, 0.88);
-  border: 1.5px solid #00f0ff;
-  color: #00f0ff;
+  background: #ffffff;
+  border: 2px solid var(--ink-line);
+  color: #0284c7;
   font-size: 10px;
   font-weight: 900;
   padding: 4px 10px;
   border-radius: 6px;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-glow-cyan {
   background: #0284c7 !important;
-  border-color: #00f0ff !important;
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4) !important;
+  border: 3px solid var(--ink-line) !important;
+  box-shadow: var(--shadow-sm) !important;
+  color: #ffffff !important;
 }
 
 .btn-glow-cyan:hover {
   background: #0369a1 !important;
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.6) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md) !important;
 }
 
 /* 3D WebGL Viewport Container */
