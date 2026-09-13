@@ -679,18 +679,16 @@ export class CurriculumQuestRunner {
 
       // Speak question button
       this.modalElement.querySelector('#btn-speak-quest-q')?.addEventListener('click', () => {
-        sound.playPop();
-        if (q) sound.playNaturalSpeech(q.question);
+        if (q) sound.playQuestionAudio(q.id, q.question);
       });
 
       // Listen to individual option pronunciation
       this.modalElement.querySelectorAll('[data-quest-listen-opt]').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          sound.playPop();
           const idx = Number(btn.getAttribute('data-quest-listen-opt'));
           if (q && q.options[idx]) {
-            sound.playNaturalSpeech(q.options[idx]);
+            sound.playOptionWordAudio(q.options[idx]);
           }
         });
       });

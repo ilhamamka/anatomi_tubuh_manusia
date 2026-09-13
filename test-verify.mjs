@@ -130,6 +130,10 @@ for (const c of CLINICAL_CASES) {
   assert.ok(fs.existsSync(`public/audio/cases/${c.id}.mp3`), `public/audio/cases/${c.id}.mp3 must exist on disk`);
 }
 
+for (let i = 1; i <= 30; i++) {
+  assert.ok(fs.existsSync(`public/audio/quiz/mq${i}.mp3`), `public/audio/quiz/mq${i}.mp3 must exist on disk`);
+}
+
 const praises = ['bagus', 'hebat', 'juara', 'keren', 'pintar', 'luar_biasa'];
 for (const p of praises) {
   assert.ok(fs.existsSync(`public/audio/id/${p}.mp3`), `public/audio/id/${p}.mp3 must exist on disk`);

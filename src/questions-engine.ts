@@ -592,7 +592,7 @@ export class QuizManager {
 
     // Auto-read question text for younger kids
     if (!this.answered) {
-      sound.playNaturalSpeech(q.question);
+      sound.playQuestionAudio(q.id, q.question);
     }
 
     this.bindEvents();
@@ -603,18 +603,16 @@ export class QuizManager {
 
     // Speak question button
     this.container.querySelector('#btn-speak-question')?.addEventListener('click', () => {
-      sound.playPop();
-      sound.playNaturalSpeech(q.question);
+      sound.playQuestionAudio(q.id, q.question);
     });
 
     // Listen to individual option pronunciation
     this.container.querySelectorAll('[data-listen-idx]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        sound.playPop();
         const idx = Number(btn.getAttribute('data-listen-idx'));
         if (q.options[idx]) {
-          sound.playNaturalSpeech(q.options[idx]);
+          sound.playOptionWordAudio(q.options[idx]);
         }
       });
     });

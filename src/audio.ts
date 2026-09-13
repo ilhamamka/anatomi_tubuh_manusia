@@ -827,7 +827,51 @@ class AudioEngine {
     }, 180);
   }
 
-  // 12. Text-to-Speech (TTS) Doctor Narration + Mascot Tones + Live Subtitle HUD
+  // 12. Pre-recorded 100% Offline Natural Audio for Quiz Questions
+  public playQuestionAudio(questionId: string, fallbackText: string, onEnd?: () => void): void {
+    this.soundEnabled = true;
+    this.initCtx();
+    this.playPop(520);
+    this.updateHud(true, fallbackText, 'Dokter Cilik Membacakan Soal:');
+    this.notifySpeaking(true, fallbackText);
+
+    this.playNaturalAudioClip(
+      `quiz/${questionId}.mp3`,
+      () => {
+        // If file not found, fallback to TTS speak
+        this.speak(fallbackText, undefined, onEnd, 'Dokter Cilik Membacakan Soal:');
+      },
+      () => {
+        this.updateHud(false, '');
+        this.notifySpeaking(false, '');
+        if (onEnd) onEnd();
+      }
+    );
+  }
+
+  // 13. Pre-recorded 100% Offline Audio for Individual Quiz Options
+  public playOptionWordAudio(word: string, onEnd?: () => void): void {
+    this.soundEnabled = true;
+    this.initCtx();
+    this.playPop();
+    const safe = word.toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
+    this.updateHud(true, word, 'Pelafalan Kata:');
+    this.notifySpeaking(true, word);
+
+    this.playNaturalAudioClip(
+      `words/${safe}.mp3`,
+      () => {
+        this.speak(word, undefined, onEnd, 'Pelafalan Kata:');
+      },
+      () => {
+        this.updateHud(false, '');
+        this.notifySpeaking(false, '');
+        if (onEnd) onEnd();
+      }
+    );
+  }
+
+  // 14. Text-to-Speech (TTS) Doctor Narration + Mascot Tones + Live Subtitle HUD
   public speak(text: string, onStart?: () => void, onEnd?: () => void, speakerTitle: string = 'Dokter Cilik Sedang Bercerita:') {
     if (!text) return;
     // Auto-unmute when explicit speech narration is triggered
