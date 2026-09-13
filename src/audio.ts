@@ -603,6 +603,8 @@ class AudioEngine {
       this.stopSpeaking();
       const audio = new Audio(`/audio/${relativePath}`);
       this.currentSpeechAudio = audio;
+      // Energetic & bouncy tempo for kids (matching animated cartoon mascot voices)
+      audio.playbackRate = 1.09;
 
       audio.onended = () => {
         this.currentSpeechAudio = null;
@@ -654,6 +656,7 @@ class AudioEngine {
       const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${tl}&client=tw-ob`;
       const audio = new Audio(url);
       this.currentSpeechAudio = audio;
+      audio.playbackRate = 1.09;
 
       audio.onended = () => {
         this.currentSpeechAudio = null;
@@ -675,13 +678,45 @@ class AudioEngine {
     }
   }
 
+  // Cheerful kid-friendly character intro jingle (Ascending pentatonic glissando like Alphablocks/Numberblocks)
+  public playExcitedChime() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const notes = [392.00, 523.25, 659.25, 783.99, 1046.50]; // G4, C5, E5, G5, C6 (bright sparkling star fanfare)
+    const now = this.ctx.currentTime;
+
+    notes.forEach((freq, idx) => {
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = now + idx * 0.055;
+
+      osc.type = 'triangle'; // warm bright marimba chime
+      osc.frequency.setValueAtTime(freq, t);
+
+      gain.gain.setValueAtTime(0.18, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.18);
+    });
+  }
+
   // Indonesian cheerful praise voice clips like Alphablocks/Numberblocks ("Hebat!", "Pintar!", "Luar Biasa!")
   public speakPraise() {
     const praises = ['bagus', 'hebat', 'juara', 'keren', 'pintar', 'luar_biasa'];
     const choice = praises[Math.floor(Math.random() * praises.length)];
-    this.playNaturalAudioClip(`id/${choice}.mp3`, () => {
-      this.playFanfare();
-    });
+    this.playExcitedChime();
+    setTimeout(() => {
+      this.playNaturalAudioClip(`id/${choice}.mp3`, () => {
+        this.playFanfare();
+      });
+    }, 150);
   }
 
   // Specialized Kid-Friendly Story Narration Engine (Pre-recorded human voice + streaming + subtitle HUD)
@@ -690,8 +725,8 @@ class AudioEngine {
     this.soundEnabled = true;
     this.initCtx();
 
-    // 1. Play tactile confirmation pop sound
-    this.playPop(520);
+    // 1. Play signature cheerful ascending character chime
+    this.playExcitedChime();
 
     // 2. Show visual subtitle HUD banner with live waveforms
     this.updateHud(true, storyText, `Dokter Cilik Bercerita · ${organName}`);
@@ -700,19 +735,21 @@ class AudioEngine {
     const sanitizedId = organId ? organId.toLowerCase().replace(/[^a-z0-9_]/g, '') : '';
     const clipPath = sanitizedId.startsWith('case_') ? `cases/${sanitizedId}.mp3` : `organs/${sanitizedId}.mp3`;
 
-    if (sanitizedId) {
-      // 3. Play high-definition local studio MP3 recording first
-      this.playNaturalAudioClip(
-        clipPath,
-        () => {
-          // Fallback A: Stream Google Indonesian voice directly
-          this.playNaturalSpeech(storyText, 'id', onEnd);
-        },
-        onEnd
-      );
-    } else {
-      this.playNaturalSpeech(storyText, 'id', onEnd);
-    }
+    // 3. Play voice with a small 180ms delay so the musical sparkle introduces the character
+    setTimeout(() => {
+      if (sanitizedId) {
+        this.playNaturalAudioClip(
+          clipPath,
+          () => {
+            // Fallback A: Stream Google Indonesian voice directly
+            this.playNaturalSpeech(storyText, 'id', onEnd);
+          },
+          onEnd
+        );
+      } else {
+        this.playNaturalSpeech(storyText, 'id', onEnd);
+      }
+    }, 180);
   }
 
   // 12. Text-to-Speech (TTS) Doctor Narration + Mascot Tones + Live Subtitle HUD
