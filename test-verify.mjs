@@ -206,4 +206,16 @@ assert.ok(ICONS.quiz(20).includes('<svg'), 'quiz icon must render valid SVG');
 assert.ok(ICONS.flow(20).includes('<svg'), 'flow icon must render valid SVG');
 console.log('✅ New quiz and flow SVG icons verified.');
 
+// 12. Verify Curriculum Quest Engine (5-Step Mission Journey)
+import { CurriculumQuestRunner } from './src/curriculum-quest.ts';
+for (let lvl = 1; lvl <= 5; lvl++) {
+  const runner = new CurriculumQuestRunner(lvl, {
+    onComplete: () => {},
+    onExit: () => {},
+    onGoToWorksheets: () => {}
+  });
+  assert.ok(runner, `CurriculumQuestRunner for Level ${lvl} must instantiate successfully`);
+}
+console.log('✅ CurriculumQuestRunner verified across all 5 curriculum levels.');
+
 console.log('\n🎉 ALL ANATOMI TUBUH MANUSIA VERIFICATION TESTS PASSED SUCCESSFULLY! 🩺✨\n');

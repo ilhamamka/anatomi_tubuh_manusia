@@ -17,6 +17,7 @@ import { ShareCardGenerator } from './share-card';
 import { getIcon, renderBrandLogo } from './icons';
 import { QuizManager } from './questions-engine';
 import { PhysiologyFlowSimulator } from './physiology-flow';
+import { CurriculumQuestRunner } from './curriculum-quest';
 
 class App {
   private currentScreen: string = 'screen-home';
@@ -203,12 +204,20 @@ class App {
     }
 
     sound.playPop();
-    const level = CURRICULUM_LEVELS.find(l => l.id === levelId);
-    if (!level) return;
-
-    // Start assembly game with specific level organs
-    this.assemblyGame.startLevel(level.organs);
-    this.switchScreen('screen-assembly');
+    const runner = new CurriculumQuestRunner(levelId, {
+      onComplete: (_lvlId, _xp, _stars) => {
+        this.renderPlayerProfilePill();
+        this.renderCurriculumLevels();
+      },
+      onExit: () => {
+        this.renderPlayerProfilePill();
+        this.renderCurriculumLevels();
+      },
+      onGoToWorksheets: () => {
+        this.switchScreen('screen-worksheets');
+      }
+    });
+    runner.start();
   }
 
   public switchScreen(screenId: string, updateHash = true) {
