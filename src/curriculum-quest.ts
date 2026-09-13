@@ -6,7 +6,7 @@ import { ORGANS, CURRICULUM_LEVELS, type CurriculumLevel, type OrganInfo } from 
 import { sound } from './audio';
 import { confetti } from './confetti';
 import { leaderboard } from './leaderboard';
-import { MEDICAL_QUESTIONS, type MedicalQuestion } from './questions-engine';
+import { MEDICAL_QUESTIONS, getOptionIcon, type MedicalQuestion } from './questions-engine';
 
 export interface QuestCallbacks {
   onComplete: (levelId: number, xpEarned: number, starsEarned: number) => void;
@@ -404,21 +404,29 @@ export class CurriculumQuestRunner {
         </div>
 
         <div style="background:#ffffff; border:3px solid var(--ink-line); border-radius:16px; padding:20px; max-width:680px; margin:0 auto 20px; box-shadow:var(--shadow-sm);">
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
-            <span style="font-size:32px;">${q.icon}</span>
-            <h4 style="font-family:var(--font-display); font-size:16px; font-weight:900; margin:0; line-height:1.3;">
-              ${q.question}
-            </h4>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:260px;">
+              <span style="font-size:36px;">${q.icon}</span>
+              <h4 style="font-family:var(--font-display); font-size:16px; font-weight:900; margin:0; line-height:1.35;">
+                ${q.question}
+              </h4>
+            </div>
+            <button id="btn-speak-quest-q" class="btn-neo-accent btn-speak-question" type="button" title="Dengarkan Suara Pertanyaan">
+              🔊 Dengarkan Soal
+            </button>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
             ${q.options.map((opt, idx) => {
+              const optIcon = getOptionIcon(opt);
               let optStyle = 'background:#ffffff; border:2px solid var(--ink-line); color:#1e293b;';
               if (this.quizAnswered) {
                 if (idx === q.correctIndex) {
-                  optStyle = 'background:#dcfce7; border:2px solid #16a34a; color:#15803d; font-weight:900;';
+                  optStyle = 'background:#dcfce7; border:2px solid #16a34a; color:#15803d; font-weight:900; box-shadow:3px 3px 0 #16a34a;';
                 } else if (idx === this.quizSelectedOption) {
-                  optStyle = 'background:#fee2e2; border:2px solid #e11d48; color:#b91c1c;';
+                  optStyle = 'background:#fee2e2; border:2px solid #e11d48; color:#b91c1c; box-shadow:3px 3px 0 #e11d48;';
+                } else {
+                  optStyle += ' opacity: 0.6;';
                 }
               }
 
@@ -427,8 +435,15 @@ export class CurriculumQuestRunner {
                         data-quiz-opt="${idx}" 
                         type="button" 
                         ${this.quizAnswered ? 'disabled' : ''}
-                        style="padding:12px 14px; border-radius:10px; font-family:var(--font-body); font-weight:800; font-size:13px; text-align:left; cursor:pointer; ${optStyle}">
-                  ${['A', 'B', 'C', 'D'][idx]}. ${opt}
+                        style="padding:12px 14px; border-radius:12px; display:flex; align-items:center; gap:12px; cursor:pointer; box-shadow:var(--shadow-sm); ${optStyle}">
+                  <div class="option-icon-badge">${optIcon}</div>
+                  <div style="flex:1; display:flex; align-items:center; gap:8px;">
+                    <span class="option-letter" style="width:28px; height:28px; font-size:12px;">${['A', 'B', 'C', 'D'][idx]}</span>
+                    <span class="option-text" style="font-size:14px;">${opt}</span>
+                  </div>
+                  <span class="btn-listen-opt" data-quest-listen-opt="${idx}" role="button" tabindex="0" title="Dengarkan kata: ${opt}">
+                    🔈
+                  </span>
                 </button>
               `;
             }).join('')}
@@ -660,6 +675,26 @@ export class CurriculumQuestRunner {
 
     // STEP 4 Events (Quiz)
     if (this.currentStep === 4) {
+      const q = this.currentQuestion;
+
+      // Speak question button
+      this.modalElement.querySelector('#btn-speak-quest-q')?.addEventListener('click', () => {
+        sound.playPop();
+        if (q) sound.playNaturalSpeech(q.question);
+      });
+
+      // Listen to individual option pronunciation
+      this.modalElement.querySelectorAll('[data-quest-listen-opt]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sound.playPop();
+          const idx = Number(btn.getAttribute('data-quest-listen-opt'));
+          if (q && q.options[idx]) {
+            sound.playNaturalSpeech(q.options[idx]);
+          }
+        });
+      });
+
       this.modalElement.querySelectorAll('[data-quiz-opt]').forEach(btn => {
         btn.addEventListener('click', () => {
           if (this.quizAnswered || !this.currentQuestion) return;

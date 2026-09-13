@@ -218,4 +218,14 @@ for (let lvl = 1; lvl <= 5; lvl++) {
 }
 console.log('✅ CurriculumQuestRunner verified across all 5 curriculum levels.');
 
+// 13. Verify Option Visual Icon Helper (Kids icon-based quiz)
+import { getOptionIcon } from './src/questions-engine.ts';
+assert.equal(getOptionIcon('Jantung'), '🫀');
+assert.equal(getOptionIcon('Lambung'), '🥣');
+assert.equal(getOptionIcon('Paru-paru'), '🫁');
+assert.equal(getOptionIcon('Otak'), '🧠');
+assert.equal(getOptionIcon('Ginjal'), '🫘');
+assert.equal(getOptionIcon('Mata'), '👁️');
+console.log('✅ Option visual icon helper getOptionIcon verified.');
+
 console.log('\n🎉 ALL ANATOMI TUBUH MANUSIA VERIFICATION TESTS PASSED SUCCESSFULLY! 🩺✨\n');

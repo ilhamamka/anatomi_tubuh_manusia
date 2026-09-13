@@ -20,6 +20,36 @@ export interface MedicalQuestion {
   organId: string;
 }
 
+export function getOptionIcon(text: string): string {
+  const lower = text.toLowerCase();
+  if (lower.includes('jantung')) return '🫀';
+  if (lower.includes('otak') || lower.includes('saraf') || lower.includes('neuron')) return '🧠';
+  if (lower.includes('paru') || lower.includes('napas') || lower.includes('oksigen') || lower.includes('alveolus')) return '🫁';
+  if (lower.includes('lambung') || lower.includes('asam') || lower.includes('pepsin') || lower.includes('bubur')) return '🥣';
+  if (lower.includes('hati') || lower.includes('empedu') || lower.includes('penawar')) return '🍫';
+  if (lower.includes('ginjal') || lower.includes('urin') || lower.includes('saring') || lower.includes('nefron')) return '🫘';
+  if (lower.includes('usus') || lower.includes('serap') || lower.includes('kolon')) return '🌭';
+  if (lower.includes('tulang') || lower.includes('rangka') || lower.includes('femur') || lower.includes('kalsium') || lower.includes('206')) return '🦴';
+  if (lower.includes('darah') || lower.includes('eritrosit') || lower.includes('leukosit') || lower.includes('kapiler') || lower.includes('trombosit')) return '🩸';
+  if (lower.includes('mata') || lower.includes('lihat') || lower.includes('cahaya') || lower.includes('retina')) return '👁️';
+  if (lower.includes('telinga') || lower.includes('dengar') || lower.includes('suara') || lower.includes('gendang')) return '👂';
+  if (lower.includes('kulit') || lower.includes('raba') || lower.includes('sentuh') || lower.includes('keringat')) return '🖐️';
+  if (lower.includes('hidung') || lower.includes('cium') || lower.includes('aroma') || lower.includes('bau')) return '👃';
+  if (lower.includes('lidah') || lower.includes('manis') || lower.includes('pahit') || lower.includes('rasa') || lower.includes('kecap')) return '👅';
+  if (lower.includes('gigi') || lower.includes('kunyah') || lower.includes('ptialin') || lower.includes('mulut')) return '🦷';
+  if (lower.includes('makan') || lower.includes('gizi') || lower.includes('nutrisi') || lower.includes('buah') || lower.includes('sayur')) return '🍎';
+  if (lower.includes('air') || lower.includes('minum') || lower.includes('cairan')) return '💧';
+  if (lower.includes('tidur') || lower.includes('istirahat')) return '😴';
+  if (lower.includes('lari') || lower.includes('gerak') || lower.includes('olahraga') || lower.includes('otot')) return '🏃';
+  if (lower.includes('kuman') || lower.includes('bakteri') || lower.includes('virus') || lower.includes('penyakit')) return '🦠';
+  if (lower.includes('obat') || lower.includes('resep') || lower.includes('vitamin') || lower.includes('vaksin')) return '💊';
+  if (lower.includes('cepat') || lower.includes('naik') || lower.includes('tambah')) return '⚡';
+  if (lower.includes('lambat') || lower.includes('turun') || lower.includes('kurang')) return '🐢';
+  if (lower.includes('tetap') || lower.includes('sama') || lower.includes('seimbang')) return '⚖️';
+  if (lower.includes('berhenti') || lower.includes('tidak')) return '🛑';
+  return '✨';
+}
+
 export const MEDICAL_QUESTIONS: MedicalQuestion[] = [
   // --- TIER 1: DOKTER MUDA (SD Kelas 3-4: Mengenal Bagian & Fungsi Organ Tubuh) ---
   {
@@ -502,14 +532,20 @@ export class QuizManager {
             <span class="quiz-number-indicator">Soal ${this.currentIndex + 1} dari ${this.questions.length}</span>
           </div>
 
-          <div class="quiz-question-row">
-            <span class="quiz-large-icon">${q.icon}</span>
-            <h3 class="quiz-question-text">${q.question}</h3>
+          <div class="quiz-question-row" style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px;">
+            <div class="quiz-question-main" style="display:flex; align-items:center; gap:14px; flex:1; min-width:280px;">
+              <span class="quiz-large-icon">${q.icon}</span>
+              <h3 class="quiz-question-text" style="margin:0;">${q.question}</h3>
+            </div>
+            <button id="btn-speak-question" class="btn-neo-accent btn-speak-question" type="button" title="Dengarkan Suara Pertanyaan">
+              🔊 Dengarkan Soal
+            </button>
           </div>
 
-          <!-- Options Grid -->
+          <!-- Options Grid with Visual Icons and Listen Buttons -->
           <div class="quiz-options-grid">
             ${q.options.map((opt, idx) => {
+              const optIcon = getOptionIcon(opt);
               let stateClass = '';
               if (this.answered) {
                 if (idx === q.correctIndex) {
@@ -523,8 +559,14 @@ export class QuizManager {
               const letters = ['A', 'B', 'C', 'D'];
               return `
                 <button class="quiz-option-btn ${stateClass}" data-option-index="${idx}" ${this.answered ? 'disabled' : ''} type="button">
-                  <span class="option-letter">${letters[idx]}</span>
-                  <span class="option-text">${opt}</span>
+                  <div class="option-icon-badge">${optIcon}</div>
+                  <div class="option-body-content" style="flex:1; display:flex; align-items:center; gap:10px;">
+                    <span class="option-letter">${letters[idx]}</span>
+                    <span class="option-text">${opt}</span>
+                  </div>
+                  <span class="btn-listen-opt" data-listen-idx="${idx}" role="button" tabindex="0" title="Dengarkan kata: ${opt}">
+                    🔈
+                  </span>
                 </button>
               `;
             }).join('')}
@@ -548,10 +590,35 @@ export class QuizManager {
       </div>
     `;
 
+    // Auto-read question text for younger kids
+    if (!this.answered) {
+      sound.playNaturalSpeech(q.question);
+    }
+
     this.bindEvents();
   }
 
   private bindEvents() {
+    const q = this.questions[this.currentIndex];
+
+    // Speak question button
+    this.container.querySelector('#btn-speak-question')?.addEventListener('click', () => {
+      sound.playPop();
+      sound.playNaturalSpeech(q.question);
+    });
+
+    // Listen to individual option pronunciation
+    this.container.querySelectorAll('[data-listen-idx]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sound.playPop();
+        const idx = Number(btn.getAttribute('data-listen-idx'));
+        if (q.options[idx]) {
+          sound.playNaturalSpeech(q.options[idx]);
+        }
+      });
+    });
+
     // Tier buttons
     this.container.querySelectorAll('[data-tier]').forEach(btn => {
       btn.addEventListener('click', () => {
