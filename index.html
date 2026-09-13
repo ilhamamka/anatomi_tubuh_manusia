@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#fdf6ec">
+  <title>Anatomi Tubuh Kita — Game Edukasi Biologi & Dokter Cilik Indonesia</title>
+  <meta name="description" content="Media edukasi interaktif biologi anatomi tubuh manusia lengkap untuk anak dan keluarga. Dilengkapi laboratorium bedah organ, pemindai sinar-X stetoskop, klinik dokter cilik, dan piagam resmi!">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🫀</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900;1000&family=Nunito:wght@700;800;900;1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <style>
+    body { background-color: #fdf6ec; margin: 0; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+      <div class="topbar-content">
+        <!-- Brand Badge -->
+        <div class="brand-badge" id="btn-nav-home" role="button" tabindex="0" aria-label="Beranda Game">
+          <!-- Injected by main.ts -->
+        </div>
+
+        <div class="topbar-actions">
+          <!-- Cluster 1: Aktivitas Belajar Siswa -->
+          <nav class="nav-cluster" aria-label="Menu Belajar">
+            <button id="btn-nav-chart" class="nav-pill-btn" type="button" title="Bagan Atlas Lengkap Seluruh Organ">
+              <span class="btn-svg-slot" data-icon="chart"></span> <span class="action-text">Atlas</span>
+            </button>
+            <button id="btn-nav-sandbox" class="nav-pill-btn" type="button" title="Lab Bebas Eksperimen Organ" style="background:#fdf4ff; border-color:#d946ef; color:#a21caf;">
+              <span class="btn-svg-slot" data-icon="sandbox"></span> <span class="action-text">Lab Bebas</span>
+            </button>
+            <button id="btn-nav-leaderboard" class="nav-pill-btn" type="button" title="Papan Peringkat Dokter Cilik Indonesia">
+              <span class="btn-svg-slot" data-icon="trophy"></span> <span class="action-text">Ranking</span>
+            </button>
+          </nav>
+
+          <!-- Cluster 2: Zona Guru & Orang Tua -->
+          <nav class="nav-cluster" aria-label="Menu Edukasi">
+            <button id="btn-nav-guide" class="nav-pill-btn" type="button" title="Panduan Belajar Kurikulum Merdeka Sains">
+              <span class="btn-svg-slot" data-icon="guide"></span> <span class="action-text">Panduan</span>
+            </button>
+            <button id="btn-nav-worksheets" class="nav-pill-btn" type="button" title="Cetak Lembar Kerja & Sertifikat Dokter">
+              <span class="btn-svg-slot" data-icon="print"></span> <span class="action-text">Cetak</span>
+            </button>
+          </nav>
+
+          <!-- VIP Jewel Badge -->
+          <button id="btn-nav-vip" class="nav-vip-jewel" type="button" title="Beli Lisensi Penuh / Buka Semua Level">
+            <span class="btn-svg-slot" data-icon="vip"></span> <span id="vip-status-label">Akses VIP</span>
+          </button>
+
+          <!-- Quick Audio, Language & Fullscreen Controls Capsule -->
+          <div class="settings-capsule" role="group" aria-label="Pengaturan Cepat">
+            <button id="btn-toggle-lang" class="capsule-btn" type="button" title="Ganti Bahasa Suara: ID / EN">
+              <span class="capsule-lang-text" id="lang-label">ID</span>
+            </button>
+            <div class="capsule-divider" aria-hidden="true"></div>
+            <button id="btn-toggle-bgm" class="capsule-btn" type="button" title="Nyalakan/Matikan Musik Lab">
+              <span class="btn-svg-slot" id="icon-bgm-slot" data-icon="music"></span>
+            </button>
+            <button id="btn-toggle-sound" class="capsule-btn" type="button" title="Nyalakan/Matikan Suara Efek">
+              <span class="btn-svg-slot" id="icon-sound-slot" data-icon="sound"></span>
+            </button>
+            <button id="btn-toggle-fullscreen" class="capsule-btn" type="button" title="Layar Penuh Kiosk">
+              <span class="btn-svg-slot" data-icon="fullscreen"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Screens Container -->
+    <main>
+      <!-- SCREEN 1: HOME & LEVEL HUB -->
+      <section id="screen-home" class="screen active">
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+          <div class="hero-copy">
+            <span class="hero-kicker">🇮🇩 EDISI SPESIAL SAINS BIOLOGI INDONESIA · COBA GRATIS</span>
+            <h2 class="hero-title">Petualangan Mengenal Tubuh Manusia Jadi Super Asyik!</h2>
+            <p class="hero-desc">
+              Ajak si kecil mendengarkan detak jantung asli, merakit organ ke dalam siluet tubuh, menggunakan pemindai sinar-X, dan menjadi dokter cilik penyelamat pasien!
+            </p>
+            <div class="hero-actions-row">
+              <button id="btn-hero-play-assembly" class="btn-neo-primary" type="button">
+                🧪 Mulai Pasang Organ 🚀
+              </button>
+              <button id="btn-hero-play-scanner" class="btn-neo-secondary" type="button">
+                🔬 Buka Pemindai Sinar-X
+              </button>
+            </div>
+          </div>
+
+          <div class="hero-mascots-showcase" id="hero-mascots-box">
+            <!-- Injected by main.ts -->
+          </div>
+        </div>
+
+        <!-- 3 Utama Mode Game Interaktif -->
+        <div class="game-modes-grid">
+          <!-- Mode 1 Card -->
+          <div class="mode-card" id="card-mode-assembly" role="button" tabindex="0">
+            <div>
+              <div class="mode-card-top">
+                <span class="mode-badge" style="background:#fee2e2; color:#ef4444; border-color:#ef4444;">MODE UTAMA 1</span>
+                <div class="mode-icon-circle" style="background:#fef2f2;">🧪</div>
+              </div>
+              <h3 class="mode-title">Laboratorium Pasang Organ</h3>
+              <p class="mode-desc">Tantangan menyusun jantung, paru-paru, lambung, dan seluruh organ ke siluet tubuh manusia dengan panduan presisi.</p>
+            </div>
+            <button class="btn-neo-primary btn-sm" type="button">Masuk Lab Bedah ➡️</button>
+          </div>
+
+          <!-- Mode 2 Card -->
+          <div class="mode-card" id="card-mode-scanner" role="button" tabindex="0">
+            <div>
+              <div class="mode-card-top">
+                <span class="mode-badge" style="background:#e0f2fe; color:#0284c7; border-color:#0284c7;">MODE UTAMA 2</span>
+                <div class="mode-icon-circle" style="background:#f0f9ff;">🔬</div>
+              </div>
+              <h3 class="mode-title">Pemindai Sinar-X & Stetoskop</h3>
+              <p class="mode-desc">Filter lapisan multi-layer (Sinar-X, Rangka, Organ, Peredaran Darah), atur detak BPM, dan dengarkan suara organ asli.</p>
+            </div>
+            <button class="btn-neo-secondary btn-sm" type="button">Nyalakan Pemindai ➡️</button>
+          </div>
+
+          <!-- Mode 3 Card -->
+          <div class="mode-card" id="card-mode-clinic" role="button" tabindex="0">
+            <div>
+              <div class="mode-card-top">
+                <span class="mode-badge" style="background:#fefce8; color:#ca8a04; border-color:#ca8a04;">MODE UTAMA 3</span>
+                <div class="mode-icon-circle" style="background:#fffbeb;">🏥</div>
+              </div>
+              <h3 class="mode-title">Klinik Dokter Cilik</h3>
+              <p class="mode-desc">Periksa keluhan pasien cilik, gunakan termometer dan stetoskop, tentukan diagnosa organ, dan resepkan solusi sehat!</p>
+            </div>
+            <button class="btn-neo-secondary btn-sm" type="button">Buka Klinik Periksa ➡️</button>
+          </div>
+        </div>
+
+        <!-- Kurikulum Bertingkat (Levels 1 - 5) -->
+        <div class="levels-selector-wrapper">
+          <div class="levels-header-row">
+            <div>
+              <h3 class="levels-heading">🏆 Misi Kurikulum Bertingkat (Tingkat 1 - 5)</h3>
+              <p style="font-size:14px; font-weight:700; color:#64748b;">Selesaikan setiap misi untuk naik gelar kedokteran dan meraih piagam dokter!</p>
+            </div>
+            <div id="player-profile-pill" style="cursor:pointer;" title="Klik untuk ubah nama profil">
+              <!-- Player profile mini chip -->
+            </div>
+          </div>
+
+          <div class="levels-list-grid" id="levels-list-container">
+            <!-- Injected by main.ts -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: ORGAN ASSEMBLY GAME STAGE -->
+      <section id="screen-assembly" class="screen">
+        <div id="assembly-game-root"></div>
+      </section>
+
+      <!-- SCREEN 3: MULTI-LAYER BODY SCANNER STAGE -->
+      <section id="screen-scanner" class="screen">
+        <div id="scanner-game-root"></div>
+      </section>
+
+      <!-- SCREEN 4: PEDIATRIC CLINIC GAME STAGE -->
+      <section id="screen-clinic" class="screen">
+        <div id="clinic-game-root"></div>
+      </section>
+
+      <!-- SCREEN 5: ATLAS BAGAN ANATOMI -->
+      <section id="screen-chart" class="screen">
+        <div id="chart-root"></div>
+      </section>
+
+      <!-- SCREEN 6: LAB BEBAS ANATOMI -->
+      <section id="screen-sandbox" class="screen">
+        <div id="sandbox-root"></div>
+      </section>
+
+      <!-- SCREEN 7: PAPAN PERINGKAT DOKTER INDONESIA -->
+      <section id="screen-leaderboard" class="screen">
+        <div class="leaderboard-wrapper">
+          <div class="leaderboard-header-row">
+            <div>
+              <h2 style="font-family:var(--font-display); font-size:28px; font-weight:1000;">🏆 Papan Peringkat Dokter Cilik Indonesia</h2>
+              <p style="font-size:14px; font-weight:700; color:#64748b;">Kumpulkan Bintang Medis & Poin Pengalaman (XP) untuk menjadi Profesor Anatomi!</p>
+            </div>
+            <button id="btn-share-card" class="btn-neo-primary" type="button">
+              📤 Bagikan Rapor Kartu Dokter
+            </button>
+          </div>
+          <div class="leaderboard-list" id="leaderboard-list-container">
+            <!-- Injected by main.ts -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 8: PANDUAN ORANG TUA & GURU -->
+      <section id="screen-guide" class="screen">
+        <div id="guide-root"></div>
+      </section>
+
+      <!-- SCREEN 9: LEMBAR KERJA CETAK & SERTIFIKAT -->
+      <section id="screen-worksheets" class="screen">
+        <div id="worksheets-root"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
