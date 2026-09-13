@@ -34,6 +34,7 @@ class App {
     this.renderPlayerProfilePill();
     this.bindGlobalEvents();
     this.updateAudioIcons();
+    this.setupPWAAndWakeLock();
   }
 
   private renderBrandAndIcons() {
@@ -479,6 +480,23 @@ class App {
     modal.querySelector('#btn-cancel-profile')?.addEventListener('click', () => {
       modal.remove();
     });
+  }
+
+  private setupPWAAndWakeLock() {
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    if ('wakeLock' in navigator) {
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible') {
+          try {
+            await (navigator as unknown as { wakeLock: { request: (type: string) => Promise<unknown> } }).wakeLock.request('screen');
+          } catch {
+            // Ignore if wake lock denied
+          }
+        }
+      });
+    }
   }
 }
 
