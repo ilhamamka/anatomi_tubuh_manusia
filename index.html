@@ -79,66 +79,73 @@
     <main>
       <!-- SCREEN 1: HOME & LEVEL HUB -->
       <section id="screen-home" class="screen active">
-        <!-- Hero Banner -->
-        <div class="hero-banner">
+        <!-- Hero Banner: Cyber-Medical Hologram Workstation -->
+        <div class="hero-banner medical-hero-cockpit">
           <div class="hero-copy">
-            <span class="hero-kicker">🇮🇩 EDISI SPESIAL SAINS BIOLOGI INDONESIA · COBA GRATIS</span>
-            <h2 class="hero-title">Petualangan Mengenal Tubuh Manusia Jadi Super Asyik!</h2>
+            <div class="hero-status-row">
+              <span class="hero-kicker-medical">🇮🇩 CYBER-ANATOMY 3D PRO · KURIKULUM SAINS & BIOLOGI LENGKAP</span>
+              <span class="hero-telemetry-pill">● TELEMETRI AKTIF: 72 BPM · SpO2 99% · 120/80 mmHg</span>
+            </div>
+            <h2 class="hero-title">Eksplorasi Anatomi 3D Tubuh Manusia & Simulator Medis Interaktif</h2>
             <p class="hero-desc">
-              Ajak si kecil mendengarkan detak jantung asli, merakit organ ke dalam siluet tubuh, menggunakan pemindai sinar-X, dan menjadi dokter cilik penyelamat pasien!
+              Visualisasi 3D holografik profesional: putar 360°, lakukan pemisahan bedah organ real-time (explode view), dengarkan stetoskop akustik, pelajari irisan CT-Scan, dan diagnosa pasien di klinik dokter cilik!
             </p>
             <div class="hero-actions-row">
-              <button id="btn-hero-play-assembly" class="btn-neo-primary" type="button">
-                🧪 Mulai Pasang Organ 🚀
+              <button id="btn-hero-play-scanner" class="btn-neo-primary btn-glow-cyan" type="button">
+                🌐 Buka Workstation 3D Bedah 🚀
               </button>
-              <button id="btn-hero-play-scanner" class="btn-neo-secondary" type="button">
-                🔬 Buka Pemindai Sinar-X
+              <button id="btn-hero-play-assembly" class="btn-neo-secondary" type="button">
+                🧪 Laboratorium Pasang Organ
               </button>
             </div>
           </div>
 
-          <div class="hero-mascots-showcase" id="hero-mascots-box">
-            <!-- Injected by main.ts -->
+          <div class="hero-visual-showcase">
+            <div class="hero-real-3d-wrapper">
+              <img src="/assets/realistic_anatomy_hero.png" alt="Visualisasi Anatomi 3D Medis" class="hero-realistic-3d-img" />
+              <div class="hero-scan-grid-effect"></div>
+              <div class="hero-radar-badge">3D REAL-TIME WEBGL</div>
+            </div>
           </div>
         </div>
 
         <!-- 3 Utama Mode Game Interaktif -->
         <div class="game-modes-grid">
+          <!-- Mode 2 Card (Featured 3D Workstation) -->
+          <div class="mode-card mode-card-highlight" id="card-mode-scanner" role="button" tabindex="0">
+            <div>
+              <div class="mode-card-top">
+                <span class="mode-badge" style="background:#0284c725; color:#38bdf8; border-color:#38bdf8;">MODE UTAMA 1 · 3D WEBGL</span>
+                <div class="mode-icon-circle" style="background:#0f172a; color:#38bdf8;">🌐</div>
+              </div>
+              <h3 class="mode-title">Workstation 3D & Sinar-X</h3>
+              <p class="mode-desc">Eksplorasi 3D 360°, geser slider bedah organ (explode view), irisan CT-Scan, dan akustik stetoskop detak jantung real-time.</p>
+            </div>
+            <button class="btn-neo-primary btn-sm btn-glow-cyan" type="button">Buka Workstation 3D ➡️</button>
+          </div>
+
           <!-- Mode 1 Card -->
           <div class="mode-card" id="card-mode-assembly" role="button" tabindex="0">
             <div>
               <div class="mode-card-top">
-                <span class="mode-badge" style="background:#fee2e2; color:#ef4444; border-color:#ef4444;">MODE UTAMA 1</span>
-                <div class="mode-icon-circle" style="background:#fef2f2;">🧪</div>
+                <span class="mode-badge" style="background:#fee2e225; color:#ff4d4f; border-color:#ff4d4f;">MODE UTAMA 2 · ASSEMBLY</span>
+                <div class="mode-icon-circle" style="background:#0f172a; color:#ff4d4f;">🧪</div>
               </div>
               <h3 class="mode-title">Laboratorium Pasang Organ</h3>
-              <p class="mode-desc">Tantangan menyusun jantung, paru-paru, lambung, dan seluruh organ ke siluet tubuh manusia dengan panduan presisi.</p>
+              <p class="mode-desc">Tantangan presisi memasang organ vital ke dalam siluet tubuh holografik transparan dengan umpan balik magnetis.</p>
             </div>
-            <button class="btn-neo-primary btn-sm" type="button">Masuk Lab Bedah ➡️</button>
-          </div>
-
-          <!-- Mode 2 Card -->
-          <div class="mode-card" id="card-mode-scanner" role="button" tabindex="0">
-            <div>
-              <div class="mode-card-top">
-                <span class="mode-badge" style="background:#e0f2fe; color:#0284c7; border-color:#0284c7;">MODE UTAMA 2</span>
-                <div class="mode-icon-circle" style="background:#f0f9ff;">🔬</div>
-              </div>
-              <h3 class="mode-title">Pemindai Sinar-X & Stetoskop</h3>
-              <p class="mode-desc">Filter lapisan multi-layer (Sinar-X, Rangka, Organ, Peredaran Darah), atur detak BPM, dan dengarkan suara organ asli.</p>
-            </div>
-            <button class="btn-neo-secondary btn-sm" type="button">Nyalakan Pemindai ➡️</button>
+            <button class="btn-neo-secondary btn-sm" type="button">Masuk Lab Bedah ➡️</button>
           </div>
 
           <!-- Mode 3 Card -->
           <div class="mode-card" id="card-mode-clinic" role="button" tabindex="0">
             <div>
               <div class="mode-card-top">
-                <span class="mode-badge" style="background:#fefce8; color:#ca8a04; border-color:#ca8a04;">MODE UTAMA 3</span>
-                <div class="mode-icon-circle" style="background:#fffbeb;">🏥</div>
+                <span class="mode-badge" style="background:#fefce825; color:#facc15; border-color:#facc15;">MODE UTAMA 3 · KLINIK</span>
+                <div class="mode-icon-circle" style="background:#0f172a; color:#facc15;">🏥</div>
               </div>
               <h3 class="mode-title">Klinik Dokter Cilik</h3>
-              <p class="mode-desc">Periksa keluhan pasien cilik, gunakan termometer dan stetoskop, tentukan diagnosa organ, dan resepkan solusi sehat!</p>
+              <p class="mode-desc">Periksa keluhan 6 pasien anak, gunakan stetoskop & sinar-X, tentukan diagnosa organ terganggu, dan resepkan solusi sehat.</p>
             </div>
             <button class="btn-neo-secondary btn-sm" type="button">Buka Klinik Periksa ➡️</button>
           </div>

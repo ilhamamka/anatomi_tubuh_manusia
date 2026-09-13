@@ -27,8 +27,20 @@ for (const id of expectedOrgans) {
   // Test coordinates
   assert.ok(organ.targetPos.x >= 0 && organ.targetPos.x <= 100, `Organ '${id}' X coordinate must be between 0-100`);
   assert.ok(organ.targetPos.y >= 0 && organ.targetPos.y <= 100, `Organ '${id}' Y coordinate must be between 0-100`);
+
+  // Test clinical telemetry metrics
+  assert.ok(organ.clinicalMetrics, `Organ '${id}' must have clinical metrics`);
+  const metricKeys = Object.keys(organ.clinicalMetrics);
+  assert.ok(metricKeys.length >= 2, `Organ '${id}' must have at least 2 clinical metrics`);
+  for (const k of metricKeys) {
+    assert.ok(k && organ.clinicalMetrics[k], `Metric '${k}' in '${id}' must have label and value`);
+  }
 }
-console.log(`✅ All ${expectedOrgans.length} anatomical organs verified with valid SVGs and pedagogical data.`);
+// Check realistic renders presence across ALL 12 organs
+for (const id of expectedOrgans) {
+  assert.ok(ORGANS[id].realisticImage, `Organ '${id}' must have realisticImage defined`);
+}
+console.log(`✅ All ${expectedOrgans.length} anatomical organs verified with 3D clinical metrics & photorealistic renders.`);
 
 // 2. Verify Curriculum Levels
 assert.equal(CURRICULUM_LEVELS.length, 5, 'Must have exactly 5 curriculum levels');

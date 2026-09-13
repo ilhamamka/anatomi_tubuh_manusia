@@ -22,6 +22,8 @@ export interface OrganInfo {
     width: number;
     height: number;
   };
+  realisticImage?: string;
+  clinicalMetrics?: Record<string, string>;
   renderSVG: (size?: number, animate?: boolean) => string;
 }
 
@@ -72,6 +74,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Tidur cukup 8-9 jam setiap malam, baca buku, dan makan makanan bergizi seperti ikan serta kacang-kacangan untuk otak cerdas!',
     soundType: 'neural',
     targetPos: { x: 50, y: 13, width: 44, height: 38 },
+    realisticImage: '/assets/realistic_brain_3d.png',
+    clinicalMetrics: {
+      'Jumlah Sel Saraf': '~86 Miliar Neuron',
+      'Kecepatan Impuls': '430 km/jam',
+      'Konsumsi Energi': '20% Total O2 Tubuh'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-pulse-slow' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fdf2f8" stroke="#db2777" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -113,6 +121,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Rutin berolahraga aerobik seperti lari kecil, bersepeda, dan berenang agar otot jantung tetap kuat dan sehat!',
     soundType: 'heartbeat',
     targetPos: { x: 52, y: 34, width: 36, height: 36 },
+    realisticImage: '/assets/realistic_heart_3d.png',
+    clinicalMetrics: {
+      'Curah Jantung': '5.0 Liter / menit',
+      'Detak Harian': '~100.000 Detak / hari',
+      'Tekanan Normal': '120/80 mmHg'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-heartbeat' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fef2f2" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -157,6 +171,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Jauhi asap rokok dan polusi kendaraan, serta seringlah menghirup udara pagi segar di taman penuh pepohonan!',
     soundType: 'breath',
     targetPos: { x: 50, y: 35, width: 62, height: 42 },
+    realisticImage: '/assets/realistic_lungs_3d.png',
+    clinicalMetrics: {
+      'Kapasitas Vital': '4.500 mL',
+      'Jumlah Alveolus': '~480 Juta Alveoli',
+      'Frekuensi Napas': '12-20 kali / menit'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-breathe' : ''}">
         <circle cx="50" cy="50" r="46" fill="#f0f9ff" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -201,6 +221,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Makan tepat waktu, kunyah makanan 20-30 kali hingga lembut, dan batasi makanan yang terlalu pedas atau asam!',
     soundType: 'digestive',
     targetPos: { x: 54, y: 48, width: 38, height: 32 },
+    realisticImage: '/assets/realistic_digestive_3d.png',
+    clinicalMetrics: {
+      'pH Asam Lambung': '1.5 - 2.0 (HCl Kuat)',
+      'Kapasitas Maks': '1.5 - 2.0 Liter',
+      'Waktu Pencernaan': '2-4 Jam'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-bubble' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fffbeb" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -241,6 +267,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Banyak minum air putih bersih, hindari obat tanpa anjuran dokter, dan konsumsi sayuran hijau segar!',
     soundType: 'pop',
     targetPos: { x: 44, y: 46, width: 42, height: 30 },
+    realisticImage: '/assets/realistic_digestive_3d.png',
+    clinicalMetrics: {
+      'Aliran Darah': '1.4 Liter / menit',
+      'Fungsi Sintesis': '>500 Proses Biokimia',
+      'Kapasitas Glikogen': '100 - 120 gram'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-float' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fefce8" stroke="#b45309" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -280,6 +312,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Konsumsi makanan berserat tinggi seperti pepaya, pisang, sayur bayam, dan yogurt untuk menjaga usus lancar!',
     soundType: 'digestive',
     targetPos: { x: 50, y: 58, width: 46, height: 38 },
+    realisticImage: '/assets/realistic_digestive_3d.png',
+    clinicalMetrics: {
+      'Panjang Usus Halus': '6.0 - 6.5 Meter',
+      'Luas Area Absorpsi': '~250 m² (Selapangan Tenis)',
+      'Mikrobioma Baik': '>100 Triliun Sel'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-wiggle' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fff7ed" stroke="#f97316" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -317,6 +355,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Minum minimal 6-8 gelas air putih setiap hari dan jangan suka menahan buang air kecil!',
     soundType: 'pop',
     targetPos: { x: 50, y: 50, width: 44, height: 26 },
+    realisticImage: '/assets/realistic_kidneys_3d.png',
+    clinicalMetrics: {
+      'Filtrasi Harian': '180 Liter Darah / hari',
+      'Jumlah Nefron': '~2.000.000 Nefron',
+      'Ekskresi Urine': '1.5 Liter / hari'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-bounce' : ''}">
         <circle cx="50" cy="50" r="46" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -359,6 +403,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Minum susu berkalsium, berjemur sinar matahari pagi untuk vitamin D, dan biasakan duduk tegak!',
     soundType: 'bone_snap',
     targetPos: { x: 50, y: 50, width: 70, height: 90 },
+    realisticImage: '/assets/realistic_skeleton_3d.png',
+    clinicalMetrics: {
+      'Jumlah Tulang Dewasa': '206 Tulang',
+      'Kandungan Mineral': 'Kalsium & Fosfat',
+      'Tulang Terbesar': 'Femur (Paha)'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-shake' : ''}">
         <circle cx="50" cy="50" r="46" fill="#f8fafc" stroke="#64748b" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -399,6 +449,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Cuci tangan dengan sabun sebelum makan, istirahat cukup, dan dapatkan imunisasi lengkap agar tentara tubuh selalu siap tempur!',
     soundType: 'neural',
     targetPos: { x: 50, y: 72, width: 36, height: 36 },
+    realisticImage: '/assets/realistic_blood_3d.png',
+    clinicalMetrics: {
+      'Populasi Eritrosit': '4.5 - 5.5 Juta / μL',
+      'Masa Hidup Sel': '120 Hari',
+      'Waktu Sirkulasi': '60 Detik / Siklus'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-float' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fff1f2" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -442,6 +498,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Jangan membaca di tempat gelap, batasi waktu bermain gawai (screen time), dan makan wortel serta tomat!',
     soundType: 'pop',
     targetPos: { x: 45, y: 16, width: 22, height: 22 },
+    realisticImage: '/assets/realistic_sensory_3d.png',
+    clinicalMetrics: {
+      'Resolusi Visual': '~576 Megapiksel',
+      'Fotoreseptor': '130 Juta Sel',
+      'Spektrum Cahaya': '380 - 740 nm'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-pulse-slow' : ''}">
         <circle cx="50" cy="50" r="46" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -480,6 +542,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Hindari mendengarkan musik lewat earphone terlalu kencang dan jangan memasukkan benda keras ke lubang telinga!',
     soundType: 'pop',
     targetPos: { x: 30, y: 17, width: 20, height: 22 },
+    realisticImage: '/assets/realistic_sensory_3d.png',
+    clinicalMetrics: {
+      'Frekuensi Pendengaran': '20 Hz - 20.000 Hz',
+      'Tulang Terkecil': 'Stapes (3 mm)',
+      'Sel Rambut Koklea': '~16.000 Sel'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-wiggle' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fefce8" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4 2"/>
@@ -514,6 +582,12 @@ export const ORGANS: Record<string, OrganInfo> = {
     healthTips: 'Mandi dua kali sehari dengan sabun lembut, gunakan tabir surya saat terik, dan minum air putih agar kulit tetap lembap!',
     soundType: 'pop',
     targetPos: { x: 50, y: 50, width: 80, height: 95 },
+    realisticImage: '/assets/realistic_anatomy_hero.png',
+    clinicalMetrics: {
+      'Luas Permukaan': '1.5 - 2.0 m²',
+      'Reseptor Sentuhan': '~5 Juta Sensor',
+      'Siklus Regenerasi': 'Setiap 28 Hari'
+    },
     renderSVG: (size = 80, animate = true) => `
       <svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" class="organ-svg ${animate ? 'organ-float' : ''}">
         <circle cx="50" cy="50" r="46" fill="#fff7ed" stroke="#f97316" stroke-width="2.5" stroke-dasharray="4 2"/>

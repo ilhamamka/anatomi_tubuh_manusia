@@ -56,15 +56,15 @@ export class OrganAssemblyGame {
               <svg viewBox="0 0 300 560" class="human-silhouette-svg">
                 <defs>
                   <linearGradient id="bodySkinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#fee2e2" />
-                    <stop offset="100%" stop-color="#fecdd3" />
+                    <stop offset="0%" stop-color="#070e1b" />
+                    <stop offset="100%" stop-color="#0f1f38" />
                   </linearGradient>
                   <filter id="glowDrop" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0284c7" flood-opacity="0.3"/>
+                    <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#00f0ff" flood-opacity="0.4"/>
                   </filter>
                 </defs>
 
-                <!-- Human Outline Silhouette (Pediatric Friendly) -->
+                <!-- Human Outline Silhouette (Cyber-Medical Hologram) -->
                 <path d="
                   M 150,25 
                   C 175,25 190,45 190,75 
@@ -90,13 +90,14 @@ export class OrganAssemblyGame {
                   C 120,110 110,95 110,75 
                   C 110,45 125,25 150,25 Z" 
                   fill="url(#bodySkinGrad)" 
-                  stroke="#2f2a26" 
-                  stroke-width="3"
+                  stroke="#00f0ff" 
+                  stroke-width="2.5"
                   stroke-linejoin="round"
                 />
 
-                <!-- Silhouette Translucent Ribcage Guide -->
-                <path d="M 130,170 C 145,165 155,165 170,170 M 125,185 C 145,180 155,180 175,185 M 128,200 C 145,195 155,195 172,200" stroke="#f43f5e" stroke-width="1.8" opacity="0.35" stroke-linecap="round"/>
+                <!-- Spine & Ribcage Holographic Guide -->
+                <line x1="150" y1="120" x2="150" y2="340" stroke="#38bdf8" stroke-width="4" opacity="0.4" stroke-linecap="round"/>
+                <path d="M 130,170 C 145,165 155,165 170,170 M 125,185 C 145,180 155,180 175,185 M 128,200 C 145,195 155,195 172,200" stroke="#38bdf8" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
 
                 <!-- Interactive Drop Target Zones -->
                 ${this.requiredOrgans.map(id => {
@@ -343,7 +344,23 @@ export class OrganAssemblyGame {
             🔊 Dengar Suara
           </button>
         </div>
+
+        ${organ.realisticImage ? `
+          <div class="drawer-real-render-box">
+            <img src="${organ.realisticImage}" alt="${organ.name}" class="drawer-real-img" />
+          </div>
+        ` : ''}
+
         <p class="drawer-summary">${organ.summary}</p>
+        
+        ${organ.clinicalMetrics ? `
+          <div class="drawer-metrics-chips">
+            ${Object.entries(organ.clinicalMetrics).map(([k, v]) => `
+              <span class="drawer-metric-item"><strong>${k}:</strong> ${v}</span>
+            `).join('')}
+          </div>
+        ` : ''}
+
         <div class="drawer-fun-fact">
           <strong>💡 Tahukah Kamu?</strong>
           <p>${organ.funFacts[0]}</p>

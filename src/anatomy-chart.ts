@@ -71,21 +71,40 @@ export class AnatomyChartManager {
               </div>
 
               <div class="atlas-preview-box">
-                ${organ.renderSVG(76, true)}
+                ${organ.realisticImage ? `
+                  <div class="atlas-real-render-wrapper">
+                    <img src="${organ.realisticImage}" alt="${organ.name}" class="atlas-real-img" />
+                    <span class="atlas-3d-badge">3D MEDICAL RENDER</span>
+                  </div>
+                ` : `
+                  ${organ.renderSVG(88, true)}
+                `}
               </div>
 
               <div class="atlas-card-body">
                 <h3 class="atlas-organ-title">${organ.name}</h3>
                 <span class="atlas-latin-name">${organ.latinName}</span>
+
+                ${organ.clinicalMetrics ? `
+                  <div class="atlas-metrics-row">
+                    ${Object.entries(organ.clinicalMetrics).map(([k, v]) => `
+                      <div class="atlas-metric-chip">
+                        <span>${k}:</span>
+                        <strong>${v}</strong>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+
                 <p class="atlas-summary-text">${organ.summary}</p>
                 
                 <div class="atlas-fun-fact-box">
-                  <strong>💡 Tahukah Kamu?</strong>
+                  <strong>💡 Fakta Sains Medis:</strong>
                   <p>${organ.funFacts[0]}</p>
                 </div>
 
                 <div class="atlas-health-tip-box">
-                  <strong>🥗 Tips Dokter:</strong>
+                  <strong>🥗 Rekomendasi Kesehatan:</strong>
                   <p>${organ.healthTips}</p>
                 </div>
               </div>
