@@ -12,9 +12,38 @@ class AudioEngine {
   private currentSpokenText: string = '';
   private autoNarrationEnabled: boolean = true;
   private speakingListeners: Set<(isSpeaking: boolean, text: string) => void> = new Set();
+  private currentSpeechAudio: HTMLAudioElement | null = null;
 
   constructor() {
     this.initVoices();
+  }
+
+  // One-time user touch gesture audio unlocker for iOS Safari & Android mobile/tablets
+  public unlockAudio() {
+    this.initCtx();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+    if (this.ctx) {
+      try {
+        const buffer = this.ctx.createBuffer(1, 1, 22050);
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.ctx.destination);
+        source.start(0);
+      } catch {}
+    }
+    try {
+      const silentAudio = new Audio();
+      silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+      silentAudio.volume = 0.01;
+      silentAudio.play().then(() => silentAudio.pause()).catch(() => {});
+    } catch {}
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.resume();
+      } catch {}
+    }
   }
 
   private initCtx() {
@@ -539,6 +568,13 @@ class AudioEngine {
   }
 
   public stopSpeaking() {
+    if (this.currentSpeechAudio) {
+      try {
+        this.currentSpeechAudio.pause();
+        this.currentSpeechAudio.currentTime = 0;
+      } catch {}
+      this.currentSpeechAudio = null;
+    }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
@@ -557,10 +593,126 @@ class AudioEngine {
     this.stopBgm();
   }
 
-  // Specialized Kid-Friendly Story Narration Engine
-  public speakStory(storyText: string, organName: string, onEnd?: () => void) {
+  // Play natural human audio clip from /audio/ (e.g. /audio/organs/heart.mp3 or /audio/id/hebat.mp3)
+  public playNaturalAudioClip(relativePath: string, onFallback?: () => void, onEnd?: () => void): void {
+    if (!this.soundEnabled || typeof window === 'undefined') {
+      if (onEnd) onEnd();
+      return;
+    }
+    try {
+      this.stopSpeaking();
+      const audio = new Audio(`/audio/${relativePath}`);
+      this.currentSpeechAudio = audio;
+
+      audio.onended = () => {
+        this.currentSpeechAudio = null;
+        this.updateHud(false, '');
+        this.notifySpeaking(false, '');
+        if (onEnd) onEnd();
+      };
+
+      audio.onerror = () => {
+        this.currentSpeechAudio = null;
+        if (onFallback) {
+          onFallback();
+        } else {
+          this.updateHud(false, '');
+          this.notifySpeaking(false, '');
+          if (onEnd) onEnd();
+        }
+      };
+
+      audio.play().catch(() => {
+        if (onFallback) {
+          onFallback();
+        } else {
+          this.updateHud(false, '');
+          this.notifySpeaking(false, '');
+          if (onEnd) onEnd();
+        }
+      });
+    } catch {
+      if (onFallback) onFallback();
+    }
+  }
+
+  // Stream high-definition natural human Indonesian speech (exact replica of Numberblocks/Alphablocks engine)
+  public playNaturalSpeech(text: string, lang: 'id' | 'en' = 'id', onEnd?: () => void): void {
+    if (!this.soundEnabled || typeof window === 'undefined') {
+      if (onEnd) onEnd();
+      return;
+    }
+    try {
+      this.stopSpeaking();
+      const tl = lang === 'id' ? 'id' : 'en-GB';
+      const cleanText = text
+        .replace(/1-10/g, '1 sampai 10')
+        .replace(/24 jam/gi, 'dua puluh empat jam')
+        .replace(/O2/gi, 'oksigen')
+        .replace(/CO2/gi, 'karbon dioksida');
+
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${tl}&client=tw-ob`;
+      const audio = new Audio(url);
+      this.currentSpeechAudio = audio;
+
+      audio.onended = () => {
+        this.currentSpeechAudio = null;
+        this.updateHud(false, '');
+        this.notifySpeaking(false, '');
+        if (onEnd) onEnd();
+      };
+
+      audio.onerror = () => {
+        this.currentSpeechAudio = null;
+        this.speak(text, undefined, onEnd);
+      };
+
+      audio.play().catch(() => {
+        this.speak(text, undefined, onEnd);
+      });
+    } catch {
+      this.speak(text, undefined, onEnd);
+    }
+  }
+
+  // Indonesian cheerful praise voice clips like Alphablocks/Numberblocks ("Hebat!", "Pintar!", "Luar Biasa!")
+  public speakPraise() {
+    const praises = ['bagus', 'hebat', 'juara', 'keren', 'pintar', 'luar_biasa'];
+    const choice = praises[Math.floor(Math.random() * praises.length)];
+    this.playNaturalAudioClip(`id/${choice}.mp3`, () => {
+      this.playFanfare();
+    });
+  }
+
+  // Specialized Kid-Friendly Story Narration Engine (Pre-recorded human voice + streaming + subtitle HUD)
+  public speakStory(storyText: string, organName: string, organId?: string, onEnd?: () => void) {
     if (!storyText) return;
-    this.speak(storyText, undefined, onEnd, `Dokter Cilik Bercerita · ${organName}`);
+    this.soundEnabled = true;
+    this.initCtx();
+
+    // 1. Play tactile confirmation pop sound
+    this.playPop(520);
+
+    // 2. Show visual subtitle HUD banner with live waveforms
+    this.updateHud(true, storyText, `Dokter Cilik Bercerita · ${organName}`);
+    this.notifySpeaking(true, storyText);
+
+    const sanitizedId = organId ? organId.toLowerCase().replace(/[^a-z0-9_]/g, '') : '';
+    const clipPath = sanitizedId.startsWith('case_') ? `cases/${sanitizedId}.mp3` : `organs/${sanitizedId}.mp3`;
+
+    if (sanitizedId) {
+      // 3. Play high-definition local studio MP3 recording first
+      this.playNaturalAudioClip(
+        clipPath,
+        () => {
+          // Fallback A: Stream Google Indonesian voice directly
+          this.playNaturalSpeech(storyText, 'id', onEnd);
+        },
+        onEnd
+      );
+    } else {
+      this.playNaturalSpeech(storyText, 'id', onEnd);
+    }
   }
 
   // 12. Text-to-Speech (TTS) Doctor Narration + Mascot Tones + Live Subtitle HUD

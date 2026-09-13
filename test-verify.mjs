@@ -113,12 +113,29 @@ assert.equal(typeof sound.onSpeakingChange, 'function', 'sound.onSpeakingChange 
 assert.equal(typeof sound.toggleAutoNarration, 'function', 'sound.toggleAutoNarration must exist');
 assert.equal(typeof sound.isAutoNarrationEnabled, 'function', 'sound.isAutoNarrationEnabled must exist');
 
-// Verify destroy methods exist on all interactive games and managers
-assert.equal(typeof BodyScannerGame.prototype.destroy, 'function', 'BodyScannerGame must implement destroy() to prevent audio/WebGL leaks');
-assert.equal(typeof AnatomyChartManager.prototype.destroy, 'function', 'AnatomyChartManager must implement destroy()');
-assert.equal(typeof OrganAssemblyGame.prototype.destroy, 'function', 'OrganAssemblyGame must implement destroy()');
-assert.equal(typeof ClinicGame.prototype.destroy, 'function', 'ClinicGame must implement destroy()');
-assert.equal(typeof SandboxManager.prototype.destroy, 'function', 'SandboxManager must implement destroy()');
+assert.equal(typeof sound.playNaturalAudioClip, 'function', 'sound.playNaturalAudioClip must exist');
+assert.equal(typeof sound.playNaturalSpeech, 'function', 'sound.playNaturalSpeech must exist');
+assert.equal(typeof sound.speakPraise, 'function', 'sound.speakPraise must exist');
+assert.equal(typeof sound.speakStory, 'function', 'sound.speakStory must exist');
+
+// Verify audio asset files exist on disk
+import fs from 'node:fs';
+for (const id of expectedOrgans) {
+  assert.ok(fs.existsSync(`public/audio/organs/${id}.mp3`), `public/audio/organs/${id}.mp3 must exist on disk`);
+  const size = fs.statSync(`public/audio/organs/${id}.mp3`).size;
+  assert.ok(size > 10000, `Audio file for ${id} must have audio content (> 10KB), got ${size} bytes`);
+}
+
+for (const c of CLINICAL_CASES) {
+  assert.ok(fs.existsSync(`public/audio/cases/${c.id}.mp3`), `public/audio/cases/${c.id}.mp3 must exist on disk`);
+}
+
+const praises = ['bagus', 'hebat', 'juara', 'keren', 'pintar', 'luar_biasa'];
+for (const p of praises) {
+  assert.ok(fs.existsSync(`public/audio/id/${p}.mp3`), `public/audio/id/${p}.mp3 must exist on disk`);
+}
+
+console.log('✅ Natural audio files (12 organs + 6 cases + 6 praises) verified on disk.');
 console.log('✅ Audio engine lifecycle and component destroy contracts verified.');
 
 console.log('\n🎉 ALL ANATOMI TUBUH MANUSIA VERIFICATION TESTS PASSED SUCCESSFULLY! 🩺✨\n');

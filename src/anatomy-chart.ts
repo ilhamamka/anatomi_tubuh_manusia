@@ -146,7 +146,7 @@ export class AnatomyChartManager {
         if (!organ) return;
 
         this.playOrganAcoustic(organ);
-        sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`);
+        sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`, organ.id);
       });
     });
   }

@@ -315,6 +315,15 @@ class App {
   }
 
   private bindGlobalEvents() {
+    // One-time gesture audio unlocker for mobile/desktop browsers
+    const unlock = () => {
+      sound.unlockAudio();
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('keydown', unlock, { once: true });
+
     // Navigation items
     document.getElementById('btn-nav-home')?.addEventListener('click', () => {
       sound.playPop();

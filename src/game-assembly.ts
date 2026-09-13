@@ -272,7 +272,7 @@ export class OrganAssemblyGame {
           const organ = ORGANS[id];
           if (organ) {
             this.playOrganSound(organ);
-            sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`);
+            sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`, organ.id);
           }
           return;
         }
@@ -339,7 +339,7 @@ export class OrganAssemblyGame {
       if (!this.activeInspectedOrgan) return;
       const o = this.activeInspectedOrgan;
       this.playOrganSound(o);
-      sound.speakStory(o.story, `${o.name} (${o.funTitle})`);
+      sound.speakStory(o.story, `${o.name} (${o.funTitle})`, o.id);
     });
   }
 
@@ -357,7 +357,7 @@ export class OrganAssemblyGame {
     confetti.burst(50);
 
     // Spoken educational feedback in natural Indonesian
-    sound.speak(`Hebat! Kamu berhasil merekonstruksi ${organ.name} ke posisi yang tepat. ${organ.summary}`);
+    sound.speakPraise();
 
     this.render();
 

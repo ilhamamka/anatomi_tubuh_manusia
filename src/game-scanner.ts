@@ -95,7 +95,7 @@ export class BodyScannerGame {
 
   private narrateOrgan(organ: OrganInfo) {
     sound.stopSpeaking();
-    sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`);
+    sound.speakStory(organ.story, `${organ.name} (${organ.funTitle})`, organ.id);
   }
 
   private updateSpeechHud(isSpeaking: boolean, text: string) {

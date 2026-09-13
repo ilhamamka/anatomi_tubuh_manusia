@@ -40,7 +40,7 @@ export class ClinicGame {
     this.render();
 
     const currentCase = CLINICAL_CASES[this.currentCaseIndex];
-    sound.speak(`Pasien ${currentCase.patientName} datang dengan keluhan: ${currentCase.chiefComplaint}. Dokter Cilik, mari periksa dengan teliti!`);
+    sound.speakStory(currentCase.story, `Pasien ${currentCase.patientName} (${currentCase.patientAge})`, currentCase.id);
   }
 
   private render() {
@@ -184,7 +184,7 @@ export class ClinicGame {
     const replayBtn = this.container.querySelector('#btn-replay-complaint');
     if (replayBtn) {
       replayBtn.addEventListener('click', () => {
-        sound.speak(`Pasien ${c.patientName} mengeluhkan: ${c.chiefComplaint}. Cerita pasien: ${c.story}`);
+        sound.speakStory(c.story, `Pasien ${c.patientName} (${c.patientAge})`, c.id);
       });
     }
 
@@ -231,7 +231,7 @@ export class ClinicGame {
           this.solvedCasesCount++;
           sound.playFanfare();
           confetti.burst(60);
-          sound.speak(`Tepat sekali! Organ yang terganggu adalah ${ORGANS[c.correctOrganId].name}. Pasien telah mendapatkan penanganan yang benar!`);
+          sound.speakPraise();
           this.render();
           this.callbacks.onCaseSolved(c, 3, 250);
         } else {
