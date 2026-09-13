@@ -228,4 +228,19 @@ assert.equal(getOptionIcon('Ginjal'), '🫘');
 assert.equal(getOptionIcon('Mata'), '👁️');
 console.log('✅ Option visual icon helper getOptionIcon verified.');
 
+// 14. Verify Atlas 4-Layer Body Peeler & Interactive Tools
+import { BODY_LAYERS } from './src/anatomy-chart.ts';
+assert.equal(BODY_LAYERS.length, 4, 'Must have exactly 4 body layers (Kulit, Otot, Rangka, Organ)');
+assert.equal(BODY_LAYERS[0].id, 'kulit');
+assert.equal(BODY_LAYERS[1].id, 'otot');
+assert.equal(BODY_LAYERS[2].id, 'rangka');
+assert.equal(BODY_LAYERS[3].id, 'organ');
+for (const layer of BODY_LAYERS) {
+  assert.ok(layer.name.length > 0, `Layer ${layer.id} must have a name`);
+  assert.ok(layer.icon.length > 0, `Layer ${layer.id} must have an icon`);
+  assert.ok(layer.bgImage.length > 0, `Layer ${layer.id} must have a bgImage`);
+  assert.ok(layer.touchpoints.length >= 3, `Layer ${layer.id} must have at least 3 touchpoints`);
+}
+console.log('✅ Atlas 4-Layer Body Peeler & interactive touchpoints verified.');
+
 console.log('\n🎉 ALL ANATOMI TUBUH MANUSIA VERIFICATION TESTS PASSED SUCCESSFULLY! 🩺✨\n');
